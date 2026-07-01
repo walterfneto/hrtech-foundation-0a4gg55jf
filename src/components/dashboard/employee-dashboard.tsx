@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Target, TrendingUp, MessageSquare, Calendar } from 'lucide-react'
+import { Target, TrendingUp, MessageSquare, Calendar, ClipboardList } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Link } from 'react-router-dom'
 
 export function EmployeeDashboard() {
   return (
@@ -29,6 +31,29 @@ export function EmployeeDashboard() {
           </Button>
         </div>
       </div>
+
+      <Card className="border-l-4 border-l-indigo-500">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base font-semibold flex items-center gap-2">
+            <ClipboardList className="h-4 w-4 text-indigo-500" />
+            Avaliações Ativas
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center justify-between p-3 bg-slate-50 border rounded-lg">
+            <div>
+              <p className="text-sm font-medium">Autoavaliação 2026.1</p>
+              <p className="text-xs text-muted-foreground">Prazo: 15 Jul 2026</p>
+            </div>
+            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+              Pendente
+            </Badge>
+          </div>
+          <Button asChild size="sm" variant="outline" className="w-full">
+            <Link to="/avaliacoes">Ir para Avaliações</Link>
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

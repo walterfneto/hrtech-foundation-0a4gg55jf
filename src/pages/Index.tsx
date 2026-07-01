@@ -15,7 +15,7 @@ export default function Index() {
         </p>
       </div>
 
-      {role === 'Admin RH' && <AdminDashboard />}
+      {(role === 'Admin RH' || role === 'Super Admin') && <AdminDashboard />}
       {role === 'Gestor' && <ManagerDashboard />}
       {role === 'Colaborador' && <EmployeeDashboard />}
     </div>

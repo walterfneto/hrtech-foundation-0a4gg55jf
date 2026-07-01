@@ -1,95 +1,281 @@
+import { useState, useEffect } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Slider } from '@/components/ui/slider'
-import { Sparkles, Info, CheckCircle2 } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Plus, FileText, CalendarRange, ClipboardList, Sparkles } from 'lucide-react'
+import { TemplateDialog } from '@/components/evaluation/template-dialog'
+import { CycleDialog } from '@/components/evaluation/cycle-dialog'
+import { EvaluationFormDialog } from '@/components/evaluation/evaluation-form-dialog'
+import { fetchTemplates, fetchCycles, fetchResponses } from '@/lib/api'
+import { MOCK_ORG_USERS } from '@/lib/org-data'
+import type { EvaluationTemplate, EvaluationCycle, EvaluationResponse } from '@/lib/types'
+
+const statusColors: Record<string, string> = {
+  ativo: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  rascunho: 'bg-slate-50 text-slate-600 border-slate-200',
+  encerrado: 'bg-blue-50 text-blue-700 border-blue-200',
+  concluido: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  rascunho_r: 'bg-amber-50 text-amber-700 border-amber-200',
+  nao_iniciado: 'bg-slate-50 text-slate-500 border-slate-200',
+}
 
 export default function Evaluations() {
+  const [templates, setTemplates] = useState<EvaluationTemplate[]>([])
+  const [cycles, setCycles] = useState<EvaluationCycle[]>([])
+  const [responses, setResponses] = useState<EvaluationResponse[]>([])
+  const [tplOpen, setTplOpen] = useState(false)
+  const [cycOpen, setCycOpen] = useState(false)
+  const [formOpen, setFormOpen] = useState(false)
+  const [selectedTpl, setSelectedTpl] = useState<EvaluationTemplate | null>(null)
+  const [selectedCycle, setSelectedCycle] = useState<EvaluationCycle | null>(null)
+
+  const loadData = async () => {
+    const [tpls, cycs] = await Promise.all([fetchTemplates(), fetchCycles()])
+    setTemplates(tpls)
+    setCycles(cycs)
+    if (cycs.length > 0) {
+      const resp = await fetchResponses(cycs[0].id)
+      setResponses(resp)
+    }
+  }
+
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const openForm = (tpl: EvaluationTemplate, cyc: EvaluationCycle) => {
+    setSelectedTpl(tpl)
+    setSelectedCycle(cyc)
+    setFormOpen(true)
+  }
+
+  const activeCycle = cycles.find((c) => c.status === 'ativo')
+  const activeTpl = activeCycle ? templates.find((t) => t.id === activeCycle.template_id) : null
+  const completed = responses.filter((r) => r.status === 'concluido').length
+  const progress = responses.length > 0 ? (completed / responses.length) * 100 : 0
+
   return (
-    <div className="space-y-6 animate-fade-in flex flex-col h-full">
+    <div className="space-y-6 animate-fade-in-up">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Avaliação: Ana Souza</h1>
-        <p className="text-muted-foreground mt-1">Ciclo Semestral 2026.1 • Prazo final em 5 dias</p>
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          Avaliações de Desempenho
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Gerencie templates, ciclos e execute avaliações.
+        </p>
       </div>
 
-      <Alert className="bg-indigo-50 border-indigo-100 text-indigo-900">
-        <Sparkles className="h-4 w-4 text-indigo-600" />
-        <AlertTitle>IA Assistiva Ativa</AlertTitle>
-        <AlertDescription className="text-indigo-800/80">
-          Você pode usar a IA para resumir a autoavaliação da Ana ou ajudar a redigir seu feedback
-          construtivo.
-        </AlertDescription>
-      </Alert>
+      <Tabs defaultValue="ciclos">
+        <TabsList>
+          <TabsTrigger value="ciclos">
+            <CalendarRange className="mr-1.5 h-4 w-4" /> Ciclos
+          </TabsTrigger>
+          <TabsTrigger value="modelos">
+            <FileText className="mr-1.5 h-4 w-4" /> Modelos
+          </TabsTrigger>
+          <TabsTrigger value="avaliar">
+            <ClipboardList className="mr-1.5 h-4 w-4" /> Avaliar
+          </TabsTrigger>
+        </TabsList>
 
-      <div className="grid md:grid-cols-2 gap-6 flex-1 min-h-0 pb-6">
-        {/* Lado Esquerdo: Autoavaliação */}
-        <div className="border rounded-lg bg-slate-50 flex flex-col shadow-sm">
-          <div className="p-4 border-b bg-white rounded-t-lg">
-            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
-              <Info className="h-4 w-4 text-muted-foreground" /> Contexto: Autoavaliação
-            </h3>
-          </div>
-          <div className="p-4 overflow-y-auto space-y-4">
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-100">
-              <div className="flex justify-between items-center mb-2">
-                <p className="font-semibold text-sm">Comunicação e Alinhamento</p>
-                <span className="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">
-                  Nota Dela: 4/5
-                </span>
-              </div>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Neste semestre, assumi a liderança técnica da squad e acredito que consegui manter
-                todos alinhados durante as crises. Sinto que posso melhorar em ser mais direta nas
-                reuniões com os stakeholders.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Lado Direito: Formulário do Gestor */}
-        <div className="border rounded-lg bg-white flex flex-col shadow-sm">
-          <div className="p-4 border-b bg-slate-50/50 rounded-t-lg flex justify-between items-center">
-            <h3 className="font-semibold text-slate-800">Sua Avaliação (Gestor)</h3>
-            <Button size="sm" variant="outline" className="h-8">
-              Salvar Rascunho
+        <TabsContent value="ciclos" className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => setCycOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Novo Ciclo
             </Button>
           </div>
-          <div className="p-6 overflow-y-auto space-y-8">
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <label className="text-sm font-semibold text-slate-900">
-                  Comunicação e Alinhamento
-                </label>
-                <span className="text-sm font-medium text-primary">Sua Nota: 4</span>
-              </div>
-              <Slider defaultValue={[4]} max={5} step={1} className="w-full" />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>1 - Abaixo do esperado</span>
-                <span>5 - Supera expectativas</span>
-              </div>
+          {cycles.map((c) => {
+            const tpl = templates.find((t) => t.id === c.template_id)
+            return (
+              <Card key={c.id}>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base">{c.nome}</CardTitle>
+                      <CardDescription>{tpl?.nome ?? 'Template não encontrado'}</CardDescription>
+                    </div>
+                    <Badge variant="outline" className={statusColors[c.status]}>
+                      {c.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
+                    <span>Início: {new Date(c.data_inicio).toLocaleDateString('pt-BR')}</span>
+                    <span>Fim: {new Date(c.data_fim).toLocaleDateString('pt-BR')}</span>
+                    <span>
+                      Alvo: {c.target === 'empresa' ? 'Toda a empresa' : 'Times específicos'}
+                    </span>
+                  </div>
+                  {c.status === 'ativo' && responses.length > 0 && (
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span>Progresso da equipe</span>
+                        <span>
+                          {completed}/{responses.length} concluídas
+                        </span>
+                      </div>
+                      <Progress value={progress} className="h-2" />
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )
+          })}
+        </TabsContent>
 
-              <div className="relative mt-4">
-                <Textarea
-                  className="min-h-[120px] resize-none pr-12 focus-visible:ring-primary/50 text-sm"
-                  placeholder="Escreva sua avaliação sobre a comunicação da Ana. Baseie-se em fatos e exemplos."
-                />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="absolute top-2 right-2 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
-                  title="Gerar rascunho com IA"
-                >
-                  <Sparkles className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-
-            <Button className="w-full bg-primary hover:bg-primary/90 text-white shadow-md">
-              <CheckCircle2 className="mr-2 h-4 w-4" /> Finalizar Avaliação
+        <TabsContent value="modelos" className="space-y-4">
+          <div className="flex justify-end">
+            <Button onClick={() => setTplOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Novo Modelo
             </Button>
           </div>
-        </div>
-      </div>
+          {templates.map((t) => (
+            <Card key={t.id}>
+              <CardHeader>
+                <CardTitle className="text-base">{t.nome}</CardTitle>
+                <CardDescription>{t.descricao}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {t.questions.map((q) => (
+                    <Badge key={q.id} variant="secondary" className="text-xs">
+                      {q.type === 'rating'
+                        ? 'Escala'
+                        : q.type === 'multiple_choice'
+                          ? 'Múltipla'
+                          : 'Texto'}
+                      : {q.label}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">{t.questions.length} perguntas</p>
+              </CardContent>
+            </Card>
+          ))}
+        </TabsContent>
+
+        <TabsContent value="avaliar" className="space-y-4">
+          {activeCycle && activeTpl ? (
+            <>
+              <Card className="bg-indigo-50 border-indigo-100">
+                <CardHeader>
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-indigo-600" />
+                    <div>
+                      <CardTitle className="text-base text-indigo-900">
+                        Avaliação Ativa: {activeCycle.nome}
+                      </CardTitle>
+                      <CardDescription className="text-indigo-700/80">
+                        Template: {activeTpl.nome} • Prazo:{' '}
+                        {new Date(activeCycle.data_fim).toLocaleDateString('pt-BR')}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-slate-700">Pendentes para sua equipe</p>
+                {MOCK_ORG_USERS.filter((u) => u.papel_sistema === 'Colaborador').map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-white hover:shadow-sm transition-shadow"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar className="h-9 w-9">
+                        <AvatarImage src={u.avatar_url ?? undefined} />
+                        <AvatarFallback>{u.nome.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium">{u.nome}</p>
+                        <p className="text-xs text-muted-foreground">{u.cargo}</p>
+                      </div>
+                    </div>
+                    <Button size="sm" onClick={() => openForm(activeTpl, activeCycle)}>
+                      Avaliar
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-semibold text-slate-700">Progresso da Equipe</p>
+                <div className="bg-white border rounded-lg overflow-hidden">
+                  <Tablemini responses={responses} />
+                </div>
+              </div>
+            </>
+          ) : (
+            <Card>
+              <CardContent className="py-12 text-center">
+                <p className="text-muted-foreground">Nenhuma avaliação ativa no momento.</p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      <TemplateDialog open={tplOpen} onOpenChange={setTplOpen} onCreated={loadData} />
+      <CycleDialog open={cycOpen} onOpenChange={setCycOpen} onCreated={loadData} />
+      {selectedTpl && selectedCycle && (
+        <EvaluationFormDialog
+          open={formOpen}
+          onOpenChange={setFormOpen}
+          template={selectedTpl}
+          cycleName={selectedCycle.nome}
+          targetUserName="Carlos Santos"
+        />
+      )}
     </div>
+  )
+}
+
+function Tablemini({ responses }: { responses: EvaluationResponse[] }) {
+  return (
+    <table className="w-full text-sm">
+      <thead className="bg-slate-50/50 border-b">
+        <tr>
+          <th className="text-left p-3 font-medium">Colaborador</th>
+          <th className="text-left p-3 font-medium">Status</th>
+          <th className="text-left p-3 font-medium">Enviado em</th>
+        </tr>
+      </thead>
+      <tbody>
+        {responses.map((r) => (
+          <tr key={r.id} className="border-b last:border-0">
+            <td className="p-3">
+              <div className="flex items-center gap-2">
+                <Avatar className="h-7 w-7">
+                  <AvatarImage src={r.user_avatar} />
+                  <AvatarFallback>{r.user_name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <span className="font-medium">{r.user_name}</span>
+              </div>
+            </td>
+            <td className="p-3">
+              <Badge
+                variant="outline"
+                className={
+                  r.status === 'concluido'
+                    ? statusColors.concluido
+                    : r.status === 'rascunho'
+                      ? statusColors.rascunho_r
+                      : statusColors.nao_iniciado
+                }
+              >
+                {r.status.replace('_', ' ')}
+              </Badge>
+            </td>
+            <td className="p-3 text-muted-foreground">
+              {r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('pt-BR') : '-'}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   )
 }

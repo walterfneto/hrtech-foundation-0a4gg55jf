@@ -7,6 +7,7 @@ interface AuthContextType {
   role: Role
   setRole: (role: Role) => void
   user: typeof MOCK_USER
+  empresaId: string
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -15,7 +16,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>('Gestor')
 
   return (
-    <AuthContext.Provider value={{ role, setRole, user: MOCK_USER }}>
+    <AuthContext.Provider
+      value={{ role, setRole, user: MOCK_USER, empresaId: MOCK_USER.empresa_id }}
+    >
       {children}
     </AuthContext.Provider>
   )

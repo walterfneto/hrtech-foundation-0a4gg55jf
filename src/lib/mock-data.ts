@@ -3,6 +3,7 @@ export const MOCK_USER = {
   avatar: 'https://img.usecurling.com/ppl/thumbnail?gender=male&seed=1',
   email: 'walter@caminho.com.br',
   tenant: 'TechCorp Brasil',
+  empresa_id: 'emp-1',
 }
 
 export const MOCK_TEAM = [

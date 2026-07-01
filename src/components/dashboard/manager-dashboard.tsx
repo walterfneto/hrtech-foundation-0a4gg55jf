@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { AlertTriangle, Calendar, FileEdit, ArrowRight } from 'lucide-react'
+import { AlertTriangle, Calendar, FileEdit, ArrowRight, BarChart3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { MOCK_TEAM } from '@/lib/mock-data'

@@ -64,6 +64,9 @@ export function Header() {
             <DropdownMenuLabel className="text-xs text-muted-foreground">
               Simulador de Perfil
             </DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => setRole('Super Admin')}>
+              Visão Super Admin {role === 'Super Admin' && '✓'}
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setRole('Admin RH')}>
               Visão Admin RH {role === 'Admin RH' && '✓'}
             </DropdownMenuItem>
