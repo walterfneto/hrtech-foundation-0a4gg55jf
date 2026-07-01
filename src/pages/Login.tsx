@@ -5,25 +5,32 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useAuth } from '@/hooks/use-auth'
-import { getErrorMessage } from '@/lib/pocketbase/errors'
+import { extractFieldErrors, getErrorMessage, type FieldErrors } from '@/lib/pocketbase/errors'
 import { Loader2 } from 'lucide-react'
 
 export default function Login() {
-  const { signIn } = useAuth()
+  const { signIn, isAuthenticated, loading } = useAuth()
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [submitting, setSubmitting] = useState(false)
+
+  if (!loading && isAuthenticated) {
+    navigate('/')
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setSubmitting(true)
     setError('')
+    setFieldErrors({})
     const { error } = await signIn(email, password)
     if (error) {
       setError(getErrorMessage(error))
-      setLoading(false)
+      setFieldErrors(extractFieldErrors(error))
+      setSubmitting(false)
     } else {
       navigate('/')
     }
@@ -54,6 +61,7 @@ export default function Login() {
                 placeholder="seu@email.com"
                 required
               />
+              {fieldErrors.email && <p className="text-sm text-red-500">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
@@ -65,14 +73,17 @@ export default function Login() {
                 placeholder="••••••••"
                 required
               />
+              {fieldErrors.password && (
+                <p className="text-sm text-red-500">{fieldErrors.password}</p>
+              )}
             </div>
-            {error && (
+            {error && !fieldErrors.email && !fieldErrors.password && (
               <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-md px-3 py-2">
                 {error}
               </p>
             )}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               Entrar
             </Button>
           </form>

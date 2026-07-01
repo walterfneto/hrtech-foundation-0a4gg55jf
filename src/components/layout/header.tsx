@@ -1,5 +1,5 @@
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Bell, Search, Settings, HelpCircle } from 'lucide-react'
+import { Bell, Search, Settings, HelpCircle, LogOut } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -12,9 +12,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
+import { useNavigate } from 'react-router-dom'
+
+function getInitials(name: string): string {
+  if (!name) return '?'
+  const parts = name.trim().split(/\s+/)
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase()
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase()
+}
 
 export function Header() {
-  const { user, role, setRole } = useAuth()
+  const { user, role, signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSignOut = () => {
+    signOut()
+    navigate('/login')
+  }
 
   return (
     <header className="h-16 border-b bg-white flex items-center justify-between px-4 sticky top-0 z-10">
@@ -43,16 +57,18 @@ export function Header() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full ml-2">
               <Avatar className="h-8 w-8 ring-1 ring-border">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                {user?.avatar && <AvatarImage src={user.avatar} alt={user?.name ?? 'User'} />}
+                <AvatarFallback>{getInitials(user?.name ?? '')}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user.name}</p>
-                <p className="text-xs leading-none text-muted-foreground mt-1">{user.email}</p>
+                <p className="text-sm font-medium leading-none">{user?.name ?? 'Usuário'}</p>
+                <p className="text-xs leading-none text-muted-foreground mt-1">
+                  {user?.email ?? ''}
+                </p>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="text-[10px] uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
                     {role}
@@ -61,20 +77,15 @@ export function Header() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="text-xs text-muted-foreground">
-              Simulador de Perfil
-            </DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => setRole('Super Admin')}>
-              Visão Super Admin {role === 'Super Admin' && '✓'}
+            <DropdownMenuItem className="cursor-pointer">
+              <Settings className="w-4 h-4 mr-2" /> Configurações
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole('Admin RH')}>
-              Visão Admin RH {role === 'Admin RH' && '✓'}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole('Gestor')}>
-              Visão Gestor {role === 'Gestor' && '✓'}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setRole('Colaborador')}>
-              Visão Colaborador {role === 'Colaborador' && '✓'}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="text-destructive focus:bg-destructive/10 cursor-pointer"
+              onClick={handleSignOut}
+            >
+              <LogOut className="w-4 h-4 mr-2" /> Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
