@@ -79,3 +79,68 @@ export interface EvaluationResponse {
   status: ResponseStatus
   submitted_at: string | null
 }
+
+export interface EmployeeRecord {
+  id: string
+  user: string
+  company: string
+  team: string
+  job_title: string
+  department: string
+  status: 'active' | 'inactive'
+  role: string
+  manager: string | null
+  created: string
+  updated: string
+  expand?: {
+    user: { id: string; name: string; email: string; avatar: string }
+    team: { id: string; name: string }
+    company: { id: string; name: string; slug: string }
+    manager?: EmployeeRecord
+  }
+}
+
+export interface EvaluationTemplateRecord {
+  id: string
+  name: string
+  description: string
+  questions: EvaluationQuestion[]
+  company: string
+  created: string
+  updated: string
+}
+
+export interface EvaluationCycleRecord {
+  id: string
+  title: string
+  description: string
+  start_date: string
+  end_date: string
+  status: 'draft' | 'active' | 'finished'
+  company: string
+  template: string
+  created: string
+  updated: string
+  expand?: {
+    template: EvaluationTemplateRecord
+    company: { id: string; name: string }
+  }
+}
+
+export interface EvaluationRecord {
+  id: string
+  cycle: string
+  employee: string
+  evaluator: string
+  responses: Record<string, string | number>
+  score: number
+  status: 'pending' | 'in_progress' | 'completed'
+  company: string
+  created: string
+  updated: string
+  expand?: {
+    cycle: EvaluationCycleRecord
+    employee: EmployeeRecord
+    evaluator: EmployeeRecord
+  }
+}

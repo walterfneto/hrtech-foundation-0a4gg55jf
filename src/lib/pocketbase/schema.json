@@ -1,0 +1,435 @@
+{
+  "generatedAt": "2026-07-01T20:55:24.523Z",
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "",
+        "update": "id = @request.auth.id",
+        "delete": "id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "avatar",
+          "type": "file",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "companies"
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
+        "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
+      ]
+    },
+    {
+      "name": "companies",
+      "type": "base",
+      "apiRules": {
+        "list": "id = @request.auth.company",
+        "view": "id = @request.auth.company",
+        "create": "@request.auth.id != ''",
+        "update": "id = @request.auth.company",
+        "delete": "id = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE UNIQUE INDEX idx_companies_slug ON companies (slug)"]
+    },
+    {
+      "name": "teams",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "parent_team",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "teams"
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_teams_company ON teams (company)"]
+    },
+    {
+      "name": "employees",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "team",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "teams"
+        },
+        {
+          "name": "job_title",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "department",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["active", "inactive"]
+        },
+        {
+          "name": "role",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["Admin RH", "Gestor", "Colaborador"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "manager",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "employees"
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_employees_company ON employees (company)",
+        "CREATE INDEX idx_employees_status ON employees (status)"
+      ]
+    },
+    {
+      "name": "evaluation_templates",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "questions",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_eval_templates_company ON evaluation_templates (company)"]
+    },
+    {
+      "name": "evaluation_cycles",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "start_date",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "end_date",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["draft", "active", "finished"]
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "template",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "evaluation_templates"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_eval_cycles_company ON evaluation_cycles (company)",
+        "CREATE INDEX idx_eval_cycles_status ON evaluation_cycles (status)"
+      ]
+    },
+    {
+      "name": "evaluations",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "cycle",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "evaluation_cycles"
+        },
+        {
+          "name": "employee",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "evaluator",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "responses",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "score",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["pending", "in_progress", "completed"]
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_evaluations_company ON evaluations (company)",
+        "CREATE INDEX idx_evaluations_status ON evaluations (status)"
+      ]
+    }
+  ]
+}

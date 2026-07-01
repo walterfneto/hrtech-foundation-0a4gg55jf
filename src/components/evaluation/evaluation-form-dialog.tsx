@@ -12,38 +12,67 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Slider } from '@/components/ui/slider'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { EvaluationTemplate } from '@/lib/types'
+import { createEvaluation } from '@/services/evaluations'
+import { useAuth } from '@/hooks/use-auth'
+import { getCurrentCompanyId } from '@/services/helpers'
+import { getErrorMessage } from '@/lib/pocketbase/errors'
 
 interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   template: EvaluationTemplate
+  cycleId: string
   cycleName: string
   targetUserName: string
+  targetEmployeeId: string
 }
 
 export function EvaluationFormDialog({
   open,
   onOpenChange,
   template,
+  cycleId,
   cycleName,
   targetUserName,
+  targetEmployeeId,
 }: Props) {
+  const { employee } = useAuth()
   const [answers, setAnswers] = useState<Record<string, string | number>>({})
+  const [submitting, setSubmitting] = useState(false)
 
   const setAns = (qid: string, val: string | number) => setAnswers((a) => ({ ...a, [qid]: val }))
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const unanswered = template.questions.filter((q) => q.required && !(q.id in answers))
     if (unanswered.length > 0) {
       toast.error(`${unanswered.length} perguntas obrigatórias pendentes`)
       return
     }
-    toast.success('Avaliação enviada com sucesso!')
-    setAnswers({})
-    onOpenChange(false)
+    setSubmitting(true)
+    try {
+      const ratingQs = template.questions.filter((q) => q.type === 'rating')
+      const scores = ratingQs.map((q) => Number(answers[q.id] || 0)).filter((n) => n > 0)
+      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
+      await createEvaluation({
+        cycle: cycleId,
+        employee: targetEmployeeId,
+        evaluator: employee?.id ?? '',
+        responses: answers,
+        score: avgScore,
+        status: 'completed',
+        company: getCurrentCompanyId(),
+      })
+      toast.success('Avaliação enviada com sucesso!')
+      setAnswers({})
+      onOpenChange(false)
+    } catch (err) {
+      toast.error(getErrorMessage(err))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -56,7 +85,6 @@ export function EvaluationFormDialog({
             <span className="font-medium text-slate-700">{targetUserName}</span>
           </DialogDescription>
         </DialogHeader>
-
         <div className="space-y-6 py-2">
           {template.questions.map((q, i) => (
             <div key={q.id} className="space-y-3 border-b pb-4 last:border-0">
@@ -71,7 +99,6 @@ export function EvaluationFormDialog({
                   )}
                 </div>
               </div>
-
               {q.type === 'rating' && (
                 <div className="px-2">
                   <div className="flex justify-between items-center mb-2">
@@ -89,7 +116,6 @@ export function EvaluationFormDialog({
                   />
                 </div>
               )}
-
               {q.type === 'multiple_choice' && (
                 <RadioGroup
                   value={String(answers[q.id] ?? '')}
@@ -108,7 +134,6 @@ export function EvaluationFormDialog({
                   ))}
                 </RadioGroup>
               )}
-
               {q.type === 'text' && (
                 <Textarea
                   value={String(answers[q.id] ?? '')}
@@ -120,13 +145,17 @@ export function EvaluationFormDialog({
             </div>
           ))}
         </div>
-
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Salvar Rascunho
           </Button>
-          <Button onClick={handleSubmit}>
-            <CheckCircle2 className="mr-2 h-4 w-4" /> Finalizar Avaliação
+          <Button onClick={handleSubmit} disabled={submitting}>
+            {submitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+            )}
+            Finalizar Avaliação
           </Button>
         </DialogFooter>
       </DialogContent>
