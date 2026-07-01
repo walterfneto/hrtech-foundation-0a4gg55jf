@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Slider } from '@/components/ui/slider'
 import { Textarea } from '@/components/ui/textarea'
@@ -20,13 +27,15 @@ export function EvaluationFormDialog({ avaliacao, onClose }: Props) {
   const [answers, setAnswers] = useState<Record<string, string | number>>(avaliacao.respostas)
   const cycle = getCycle(avaliacao.ciclo_id)
   const template = cycle ? getTemplate(cycle.modelo_id) : null
-  const avaliado = getMember(avaliado_id: avaliacao.avaliado_id)
+  const avaliado = getMember(avaliacao.avaliado_id)
 
   const setAnswer = (qid: string, val: string | number) =>
     setAnswers((prev) => ({ ...prev, [qid]: val }))
 
   const handleSubmit = () => {
-    toast.success('Avaliação enviada com sucesso!', { description: `Respostas registradas para ${avaliado?.name}.` })
+    toast.success('Avaliação enviada com sucesso!', {
+      description: `Respostas registradas para ${avaliado?.name}.`,
+    })
     onClose()
   }
 
@@ -46,7 +55,10 @@ export function EvaluationFormDialog({ avaliacao, onClose }: Props) {
             </Avatar>
             <div>
               <DialogTitle>Avaliação: {avaliado?.name}</DialogTitle>
-              <DialogDescription>{cycle?.nome} • {avaliacao.tipo === 'auto' ? 'Autoavaliação' : 'Avaliação de Gestor'}</DialogDescription>
+              <DialogDescription>
+                {cycle?.nome} •{' '}
+                {avaliacao.tipo === 'auto' ? 'Autoavaliação' : 'Avaliação de Gestor'}
+              </DialogDescription>
             </div>
           </div>
         </DialogHeader>
@@ -55,9 +67,13 @@ export function EvaluationFormDialog({ avaliacao, onClose }: Props) {
           {template?.questoes.map((q, i) => (
             <div key={q.id} className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="font-semibold text-sm">{i + 1}. {q.texto}</Label>
+                <Label className="font-semibold text-sm">
+                  {i + 1}. {q.texto}
+                </Label>
                 {q.tipo === 'escala' && answers[q.id] !== undefined && (
-                  <span className="text-sm font-bold text-primary">{answers[q.id]}/{q.escala_max}</span>
+                  <span className="text-sm font-bold text-primary">
+                    {answers[q.id]}/{q.escala_max}
+                  </span>
                 )}
               </div>
 
@@ -77,11 +93,22 @@ export function EvaluationFormDialog({ avaliacao, onClose }: Props) {
               )}
 
               {q.tipo === 'multipla_escolha' && (
-                <RadioGroup value={String(answers[q.id] || '')} onValueChange={(v) => setAnswer(q.id, v)}>
+                <RadioGroup
+                  value={String(answers[q.id] || '')}
+                  onValueChange={(v) => setAnswer(q.id, v)}
+                >
                   {q.opcoes?.map((op) => (
-                    <div key={op} className="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer">
+                    <div
+                      key={op}
+                      className="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"
+                    >
                       <RadioGroupItem value={op} id={`${q.id}-${op}`} />
-                      <Label htmlFor={`${q.id}-${op}`} className="text-sm font-normal cursor-pointer">{op}</Label>
+                      <Label
+                        htmlFor={`${q.id}-${op}`}
+                        className="text-sm font-normal cursor-pointer"
+                      >
+                        {op}
+                      </Label>
                     </div>
                   ))}
                 </RadioGroup>
