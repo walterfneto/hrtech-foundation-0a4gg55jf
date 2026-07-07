@@ -13,6 +13,7 @@ import Meetings from '@/pages/Meetings'
 import Feedback from '@/pages/Feedback'
 import PDI from '@/pages/PDI'
 import Dossier from '@/pages/Dossier'
+import MyDevelopment from '@/pages/MyDevelopment'
 import Login from '@/pages/Login'
 import NotFound from '@/pages/NotFound'
 
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="/feedback" element={<Feedback />} />
               <Route path="/pdi" element={<PDI />} />
               <Route path="/dossie" element={<Dossier />} />
+              <Route path="/meu-desenvolvimento" element={<MyDevelopment />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

@@ -8,6 +8,7 @@ import {
   MessageSquare,
   TrendingUp,
   FolderOpen,
+  UserCheck,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -29,6 +30,7 @@ const items = [
   { title: 'Feedback', url: '/feedback', icon: MessageSquare },
   { title: 'PDI', url: '/pdi', icon: TrendingUp },
   { title: 'Dossiê', url: '/dossie', icon: FolderOpen },
+  { title: 'Meu Desenvolvimento', url: '/meu-desenvolvimento', icon: UserCheck },
 ]
 
 export function AppSidebar() {

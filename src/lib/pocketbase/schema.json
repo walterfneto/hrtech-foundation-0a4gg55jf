@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T19:36:54.096Z",
+  "generatedAt": "2026-07-07T20:57:20.242Z",
   "collections": [
     {
       "name": "users",
@@ -357,8 +357,8 @@
       "name": "evaluations",
       "type": "base",
       "apiRules": {
-        "list": "company = @request.auth.company",
-        "view": "company = @request.auth.company",
+        "list": "company = @request.auth.company || @request.auth.id = employee.user.id",
+        "view": "company = @request.auth.company || @request.auth.id = employee.user.id",
         "create": "company = @request.auth.company",
         "update": "company = @request.auth.company",
         "delete": "company = @request.auth.company"
@@ -429,6 +429,78 @@
       "indexes": [
         "CREATE INDEX idx_evaluations_company ON evaluations (company)",
         "CREATE INDEX idx_evaluations_status ON evaluations (status)"
+      ]
+    },
+    {
+      "name": "one_on_ones",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id = employee.user.id || @request.auth.id = manager.user.id",
+        "view": "@request.auth.id = employee.user.id || @request.auth.id = manager.user.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id = manager.user.id",
+        "delete": "@request.auth.id = manager.user.id"
+      },
+      "fields": [
+        {
+          "name": "employee",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "manager",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "scheduled_at",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["planned", "completed", "cancelled"]
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_one_on_ones_employee ON one_on_ones (employee)",
+        "CREATE INDEX idx_one_on_ones_manager ON one_on_ones (manager)",
+        "CREATE INDEX idx_one_on_ones_scheduled ON one_on_ones (scheduled_at)"
       ]
     }
   ]
