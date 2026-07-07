@@ -1,7 +1,8 @@
 import pb from '@/lib/pocketbase/client'
 import { getCurrentCompanyId } from '@/services/helpers'
+import type { EmployeeRecord } from '@/lib/types'
 
-export async function fetchEmployees() {
+export async function fetchEmployees(): Promise<EmployeeRecord[]> {
   const cid = getCurrentCompanyId()
   if (!cid) return []
   return pb.collection('employees').getFullList({
@@ -28,4 +29,42 @@ export async function createEmployee(data: {
   manager?: string
 }) {
   return pb.collection('employees').create(data)
+}
+
+export async function createEmployeeWithUser(data: {
+  name: string
+  email: string
+  password: string
+  job_title: string
+  department: string
+  role: string
+  status: string
+  team?: string
+  manager?: string
+}) {
+  const cid = getCurrentCompanyId()
+  if (!cid) throw new Error('Company context not found')
+
+  const userRecord = await pb.collection('users').create({
+    email: data.email,
+    password: data.password,
+    passwordConfirm: data.password,
+    name: data.name,
+    company: cid,
+  })
+
+  return pb.collection('employees').create({
+    user: userRecord.id,
+    company: cid,
+    team: data.team || '',
+    job_title: data.job_title,
+    department: data.department,
+    status: data.status,
+    role: data.role,
+    manager: data.manager || '',
+  })
+}
+
+export async function deleteEmployee(id: string) {
+  return pb.collection('employees').delete(id)
 }

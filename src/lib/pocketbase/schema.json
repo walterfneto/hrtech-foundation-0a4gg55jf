@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-02T22:51:33.665Z",
+  "generatedAt": "2026-07-07T19:36:54.096Z",
   "collections": [
     {
       "name": "users",
@@ -29,19 +29,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         },
         {
           "name": "company",
@@ -84,24 +79,17 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE UNIQUE INDEX idx_companies_slug ON companies (slug)"
-      ]
+      "indexes": ["CREATE UNIQUE INDEX idx_companies_slug ON companies (slug)"]
     },
     {
       "name": "teams",
@@ -132,19 +120,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         },
         {
           "name": "parent_team",
@@ -154,9 +137,7 @@
           "collectionRef": "teams"
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_teams_company ON teams (company)"
-      ]
+      "indexes": ["CREATE INDEX idx_teams_company ON teams (company)"]
     },
     {
       "name": "employees",
@@ -207,40 +188,28 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "active",
-            "inactive"
-          ]
+          "selectValues": ["active", "inactive"]
         },
         {
           "name": "role",
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "Admin RH",
-            "Gestor",
-            "Colaborador"
-          ]
+          "selectValues": ["Admin RH", "Gestor", "Colaborador"]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         },
         {
           "name": "manager",
@@ -296,24 +265,17 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_eval_templates_company ON evaluation_templates (company)"
-      ]
+      "indexes": ["CREATE INDEX idx_eval_templates_company ON evaluation_templates (company)"]
     },
     {
       "name": "evaluation_cycles",
@@ -355,11 +317,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "draft",
-            "active",
-            "finished"
-          ]
+          "selectValues": ["draft", "active", "finished"]
         },
         {
           "name": "company",
@@ -380,19 +338,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -449,11 +402,7 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "pending",
-            "in_progress",
-            "completed"
-          ]
+          "selectValues": ["pending", "in_progress", "completed"]
         },
         {
           "name": "company",
@@ -467,19 +416,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
