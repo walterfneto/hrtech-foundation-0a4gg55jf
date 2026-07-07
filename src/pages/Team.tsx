@@ -19,12 +19,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Plus, Search, MoreHorizontal, Trash2, Mail, Building2 } from 'lucide-react'
+import { Plus, Search, MoreHorizontal, Trash2, Mail, Building2, TrendingUp } from 'lucide-react'
 import { fetchEmployees } from '@/services/employees'
 import { useRealtime } from '@/hooks/use-realtime'
 import { getAvatarUrl } from '@/services/helpers'
 import { AddEmployeeDialog } from '@/components/team/add-employee-dialog'
 import { DeleteEmployeeDialog } from '@/components/team/delete-employee-dialog'
+import { EmployeeEvolutionDialog } from '@/components/performance/employee-evolution-dialog'
 import type { EmployeeRecord } from '@/lib/types'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -51,6 +52,11 @@ export default function Team() {
   const [addOpen, setAddOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleteTarget, setDeleteTarget] = useState<{
+    id: string
+    name: string
+  } | null>(null)
+  const [evolutionOpen, setEvolutionOpen] = useState(false)
+  const [evolutionTarget, setEvolutionTarget] = useState<{
     id: string
     name: string
   } | null>(null)
@@ -199,6 +205,18 @@ export default function Team() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
+                              onClick={() => {
+                                setEvolutionTarget({
+                                  id: emp.id,
+                                  name: getEmployeeName(emp),
+                                })
+                                setEvolutionOpen(true)
+                              }}
+                            >
+                              <TrendingUp className="mr-2 h-4 w-4" />
+                              Ver Evolução
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               className="text-destructive"
                               onClick={() => {
                                 setDeleteTarget({
@@ -262,6 +280,12 @@ export default function Team() {
         employeeId={deleteTarget?.id ?? null}
         employeeName={deleteTarget?.name ?? ''}
         onDeleted={loadEmployees}
+      />
+      <EmployeeEvolutionDialog
+        open={evolutionOpen}
+        onOpenChange={setEvolutionOpen}
+        employeeId={evolutionTarget?.id ?? null}
+        employeeName={evolutionTarget?.name ?? ''}
       />
     </div>
   )
