@@ -40,7 +40,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarHeader className="h-16 flex items-center justify-center border-b">
         <div className="flex items-center gap-2 font-bold text-xl text-primary w-full px-4">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white shrink-0">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground shrink-0">
             C
           </div>
           <span className="truncate">Caminho</span>

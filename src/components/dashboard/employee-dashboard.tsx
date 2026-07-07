@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom'
 export function EmployeeDashboard() {
   return (
     <div className="space-y-6 animate-fade-in-up">
-      <div className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl p-6 text-white shadow-elevation">
+      <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-xl p-6 text-white shadow-elevation">
         <h2 className="text-xl font-bold">Olá, Walter!</h2>
         <p className="mt-2 opacity-90 text-sm max-w-xl">
           Você tem uma autoavaliação pendente para o ciclo 2026.1 e seu próximo 1:1 está agendado
@@ -18,7 +18,7 @@ export function EmployeeDashboard() {
           <Button
             variant="secondary"
             size="sm"
-            className="bg-white text-indigo-600 hover:bg-indigo-50"
+            className="bg-white text-amber-700 hover:bg-amber-50"
           >
             Preencher Autoavaliação
           </Button>
@@ -32,10 +32,10 @@ export function EmployeeDashboard() {
         </div>
       </div>
 
-      <Card className="border-l-4 border-l-indigo-500">
+      <Card className="border-l-4 border-l-amber-400">
         <CardHeader className="pb-3">
           <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <ClipboardList className="h-4 w-4 text-indigo-500" />
+            <ClipboardList className="h-4 w-4 text-amber-500" />
             Avaliações Ativas
           </CardTitle>
         </CardHeader>
@@ -60,7 +60,7 @@ export function EmployeeDashboard() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-indigo-500" />
+                <TrendingUp className="h-4 w-4 text-amber-500" />
                 Meu Desenvolvimento (PDI)
               </CardTitle>
             </div>
@@ -90,7 +90,7 @@ export function EmployeeDashboard() {
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Target className="h-4 w-4 text-emerald-500" />
+                <Target className="h-4 w-4 text-teal-500" />
                 Minhas Metas
               </CardTitle>
             </div>
@@ -101,20 +101,20 @@ export function EmployeeDashboard() {
                 <p className="text-sm font-medium leading-tight">
                   Entregar refatoração do módulo X
                 </p>
-                <span className="text-[10px] font-bold uppercase text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold uppercase text-teal-600 bg-teal-100 px-2 py-0.5 rounded">
                   No Prazo
                 </span>
               </div>
-              <Progress value={80} className="h-1.5 [&>div]:bg-emerald-500" />
+              <Progress value={80} className="h-1.5 [&>div]:bg-teal-500" />
             </div>
             <div className="p-3 bg-slate-50 border rounded-lg">
               <div className="flex justify-between items-start mb-2">
                 <p className="text-sm font-medium leading-tight">Melhorar cobertura de testes</p>
-                <span className="text-[10px] font-bold uppercase text-amber-600 bg-amber-100 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold uppercase text-orange-600 bg-orange-100 px-2 py-0.5 rounded">
                   Em Risco
                 </span>
               </div>
-              <Progress value={30} className="h-1.5 [&>div]:bg-amber-500" />
+              <Progress value={30} className="h-1.5 [&>div]:bg-orange-500" />
             </div>
           </CardContent>
         </Card>

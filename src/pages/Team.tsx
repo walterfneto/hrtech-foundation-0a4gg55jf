@@ -37,11 +37,11 @@ const ROLE_LABELS: Record<string, string> = {
 const STATUS_LABELS: Record<string, { label: string; className: string }> = {
   active: {
     label: 'Ativo',
-    className: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    className: 'bg-teal-50 text-teal-700 border-teal-200',
   },
   inactive: {
     label: 'Inativo',
-    className: 'bg-amber-50 text-amber-700 border-amber-200',
+    className: 'bg-orange-50 text-orange-700 border-orange-200',
   },
 }
 

@@ -31,7 +31,7 @@ export default function MyDevelopment() {
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Target className="h-4 w-4 text-indigo-500" />
+            <Target className="h-4 w-4 text-amber-500" />
             Plano de Desenvolvimento (PDI)
           </CardTitle>
           <CardDescription>Suas metas e ações de desenvolvimento em andamento.</CardDescription>
