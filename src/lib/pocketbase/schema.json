@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T23:01:15.309Z",
+  "generatedAt": "2026-07-10T19:31:45.851Z",
   "collections": [
     {
       "name": "users",
@@ -424,6 +424,12 @@
           "required": false,
           "system": false,
           "autodateTriggers": ["onCreate", "onUpdate"]
+        },
+        {
+          "name": "potential",
+          "type": "number",
+          "required": false,
+          "system": false
         }
       ],
       "indexes": [
@@ -502,6 +508,511 @@
         "CREATE INDEX idx_one_on_ones_manager ON one_on_ones (manager)",
         "CREATE INDEX idx_one_on_ones_scheduled ON one_on_ones (scheduled_at)"
       ]
+    },
+    {
+      "name": "tasks",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["todo", "in_progress", "completed"]
+        },
+        {
+          "name": "assignee",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "priority",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["low", "medium", "high"]
+        },
+        {
+          "name": "due_date",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "feedbacks",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "sender",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "receiver",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["public_praise", "confidential_improvement", "1_on_1"]
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "pdi_goals",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "employee",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "due_date",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["todo", "in_progress", "completed"]
+        },
+        {
+          "name": "progress",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "pulse_surveys",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "questions",
+          "type": "json",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "active",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "pulse_responses",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "survey",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "pulse_surveys"
+        },
+        {
+          "name": "score",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "comments",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "hr_requests",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "requester",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["vacation", "refund", "bonus", "training"]
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["pending", "approved", "rejected"]
+        },
+        {
+          "name": "details",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "candidates",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "phone",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["screening", "interview", "offer", "hired", "rejected"]
+        },
+        {
+          "name": "skills",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "onboarding_tracks",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "employee",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "tasks",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["in_progress", "completed"]
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
     }
   ]
 }

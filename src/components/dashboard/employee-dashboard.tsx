@@ -5,9 +5,48 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Link } from 'react-router-dom'
 
+import { useState, useEffect } from 'react'
+import { fetchTasks } from '@/services/modules'
+import { useAuth } from '@/hooks/use-auth'
+
 export function EmployeeDashboard() {
+  const { employee } = useAuth()
+  const [tasks, setTasks] = useState<any[]>([])
+  useEffect(() => {
+    if (employee) {
+      fetchTasks(employee.id).then(setTasks)
+    }
+  }, [employee])
+
+  const pendingTasks = tasks.filter((t) => t.status !== 'completed')
+
   return (
     <div className="space-y-6 animate-fade-in-up">
+      {pendingTasks.length > 0 && (
+        <Card className="border-l-4 border-l-red-500 shadow-sm">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base font-semibold">
+              Central de Pendências Urgentes
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {pendingTasks.slice(0, 3).map((t) => (
+              <div
+                key={t.id}
+                className="flex justify-between items-center bg-slate-50 p-3 rounded border"
+              >
+                <span className="text-sm font-medium">{t.title}</span>
+                <Badge variant="destructive" className="bg-red-500">
+                  {t.priority}
+                </Badge>
+              </div>
+            ))}
+            <Button asChild variant="link" className="px-0 text-red-600">
+              <Link to="/tarefas">Ver todas as tarefas</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
       <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-xl p-6 text-white shadow-elevation">
         <h2 className="text-xl font-bold">Olá, Walter!</h2>
         <p className="mt-2 opacity-90 text-sm max-w-xl">

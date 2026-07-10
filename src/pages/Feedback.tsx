@@ -1,13 +1,24 @@
+import { useState, useEffect } from 'react'
+import { fetchFeedbacks } from '@/services/modules'
+import { useAuth } from '@/hooks/use-auth'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { MessageSquarePlus, Heart } from 'lucide-react'
+import { MessageSquarePlus } from 'lucide-react'
 
 export default function Feedback() {
+  const { employee } = useAuth()
+  const [feedbacks, setFeedbacks] = useState<any[]>([])
+
+  const load = async () => setFeedbacks(await fetchFeedbacks())
+  useEffect(() => {
+    load()
+  }, [])
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-fade-in-up pb-8">
       <div>
@@ -25,40 +36,42 @@ export default function Feedback() {
         </TabsList>
 
         <TabsContent value="feed" className="mt-6 space-y-4">
-          <Card className="shadow-sm border-slate-200">
-            <CardContent className="p-5 flex items-start gap-4">
-              <Avatar className="h-10 w-10 border">
-                <AvatarImage src="https://img.usecurling.com/ppl/thumbnail?seed=2&gender=female" />
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-semibold text-slate-900">Ana Souza</span>
-                  <span className="text-muted-foreground text-sm">elogiou</span>
-                  <span className="font-semibold text-primary">Carlos Mendes</span>
-                  <span className="text-xs text-muted-foreground ml-auto">Há 2 horas</span>
+          {feedbacks.map((f) => (
+            <Card key={f.id} className="shadow-sm border-slate-200">
+              <CardContent className="p-5 flex items-start gap-4">
+                <Avatar className="h-10 w-10 border">
+                  <AvatarFallback>
+                    {f.expand?.sender?.expand?.user?.name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="font-semibold text-slate-900">
+                      {f.expand?.sender?.expand?.user?.name}
+                    </span>
+                    <span className="text-muted-foreground text-sm">enviou feedback para</span>
+                    <span className="font-semibold text-primary">
+                      {f.expand?.receiver?.expand?.user?.name}
+                    </span>
+                  </div>
+                  <p className="mt-3 text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    {f.content}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <Badge
+                      variant="secondary"
+                      className="bg-indigo-50 text-indigo-700 font-normal capitalize"
+                    >
+                      {f.type.replace(/_/g, ' ')}
+                    </Badge>
+                  </div>
                 </div>
-                <p className="mt-3 text-sm text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-100">
-                  Excelente trabalho na entrega da feature X. Sua dedicação nos detalhes de UX fez
-                  toda a diferença para o cliente. Ajudou muito o time! 🚀
-                </p>
-                <div className="mt-4 flex items-center justify-between">
-                  <Badge
-                    variant="secondary"
-                    className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 font-normal"
-                  >
-                    Trabalho em Equipe
-                  </Badge>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 text-muted-foreground hover:text-rose-500"
-                  >
-                    <Heart className="h-4 w-4 mr-1.5" /> 12
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
+          {feedbacks.length === 0 && (
+            <p className="text-center text-muted-foreground py-8">Nenhum feedback registrado.</p>
+          )}
         </TabsContent>
 
         <TabsContent value="enviar" className="mt-6">

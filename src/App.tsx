@@ -16,6 +16,10 @@ import Dossier from '@/pages/Dossier'
 import MyDevelopment from '@/pages/MyDevelopment'
 import Login from '@/pages/Login'
 import NotFound from '@/pages/NotFound'
+import Tasks from '@/pages/Tasks'
+import Climate from '@/pages/Climate'
+import Recruitment from '@/pages/Recruitment'
+import Analytics from '@/pages/Analytics'
 
 const App = () => (
   <AuthProvider>
@@ -36,6 +40,10 @@ const App = () => (
               <Route path="/pdi" element={<PDI />} />
               <Route path="/dossie" element={<Dossier />} />
               <Route path="/meu-desenvolvimento" element={<MyDevelopment />} />
+              <Route path="/tarefas" element={<Tasks />} />
+              <Route path="/clima" element={<Climate />} />
+              <Route path="/recrutamento" element={<Recruitment />} />
+              <Route path="/analytics" element={<Analytics />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

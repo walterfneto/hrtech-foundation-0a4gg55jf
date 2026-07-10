@@ -30,7 +30,10 @@ const items = [
   { title: '1:1s', url: '/1a1', icon: UserCircle },
   { title: 'Feedback', url: '/feedback', icon: MessageSquare },
   { title: 'PDI', url: '/pdi', icon: BookOpen },
-  { title: 'Dossiê', url: '/dossie', icon: FileText },
+  { title: 'Tarefas (Kanban)', url: '/tarefas', icon: FileText },
+  { title: 'Clima e Cultura', url: '/clima', icon: Target },
+  { title: 'Recrutamento', url: '/recrutamento', icon: Users },
+  { title: 'People Analytics', url: '/analytics', icon: CheckSquare },
 ]
 
 export function AppSidebar() {

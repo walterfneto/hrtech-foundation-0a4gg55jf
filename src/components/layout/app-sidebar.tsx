@@ -29,8 +29,10 @@ const items = [
   { title: '1:1s', url: '/1a1', icon: CalendarDays },
   { title: 'Feedback', url: '/feedback', icon: MessageSquare },
   { title: 'PDI', url: '/pdi', icon: TrendingUp },
-  { title: 'Dossiê', url: '/dossie', icon: FolderOpen },
-  { title: 'Meu Desenvolvimento', url: '/meu-desenvolvimento', icon: UserCheck },
+  { title: 'Tarefas', url: '/tarefas', icon: FolderOpen },
+  { title: 'Clima', url: '/clima', icon: Target },
+  { title: 'Recrutamento', url: '/recrutamento', icon: Users },
+  { title: 'Analytics', url: '/analytics', icon: TrendingUp },
 ]
 
 export function AppSidebar() {

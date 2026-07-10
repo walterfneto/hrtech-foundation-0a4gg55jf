@@ -134,6 +134,7 @@ export interface EvaluationRecord {
   evaluator: string
   responses: Record<string, string | number>
   score: number
+  potential: number
   status: 'pending' | 'in_progress' | 'completed'
   company: string
   created: string
@@ -143,4 +144,79 @@ export interface EvaluationRecord {
     employee: EmployeeRecord
     evaluator: EmployeeRecord
   }
+}
+
+export interface TaskRecord {
+  id: string
+  title: string
+  description: string
+  status: 'todo' | 'in_progress' | 'completed'
+  assignee: string
+  priority: 'low' | 'medium' | 'high'
+  due_date: string
+  company: string
+  created: string
+  updated: string
+  expand?: { assignee: EmployeeRecord }
+}
+
+export interface FeedbackRecord {
+  id: string
+  sender: string
+  receiver: string
+  type: 'public_praise' | 'confidential_improvement' | '1_on_1'
+  content: string
+  tags: any
+  company: string
+  created: string
+  updated: string
+  expand?: { sender: EmployeeRecord; receiver: EmployeeRecord }
+}
+
+export interface PdiGoalRecord {
+  id: string
+  title: string
+  description: string
+  employee: string
+  due_date: string
+  status: 'todo' | 'in_progress' | 'completed'
+  progress: number
+  company: string
+  created: string
+  updated: string
+}
+
+export interface HRRequestRecord {
+  id: string
+  requester: string
+  type: 'vacation' | 'refund' | 'bonus' | 'training'
+  status: 'pending' | 'approved' | 'rejected'
+  details: any
+  company: string
+  created: string
+  updated: string
+  expand?: { requester: EmployeeRecord }
+}
+
+export interface CandidateRecord {
+  id: string
+  name: string
+  email: string
+  phone: string
+  role: string
+  status: 'screening' | 'interview' | 'offer' | 'hired' | 'rejected'
+  skills: string[]
+  company: string
+  created: string
+  updated: string
+}
+
+export interface PulseSurveyRecord {
+  id: string
+  title: string
+  questions: any[]
+  active: boolean
+  company: string
+  created: string
+  updated: string
 }
