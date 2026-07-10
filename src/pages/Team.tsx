@@ -19,13 +19,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Plus, Search, MoreHorizontal, Trash2, Mail, Building2, TrendingUp } from 'lucide-react'
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Trash2,
+  Mail,
+  Building2,
+  TrendingUp,
+  Users,
+  Eye,
+  EyeOff,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { fetchEmployees } from '@/services/employees'
 import { useRealtime } from '@/hooks/use-realtime'
 import { getAvatarUrl } from '@/services/helpers'
 import { AddEmployeeDialog } from '@/components/team/add-employee-dialog'
 import { DeleteEmployeeDialog } from '@/components/team/delete-employee-dialog'
 import { EmployeeEvolutionDialog } from '@/components/performance/employee-evolution-dialog'
+import { OrgChart } from '@/components/team/org-chart'
 import type { EmployeeRecord } from '@/lib/types'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -60,6 +73,7 @@ export default function Team() {
     id: string
     name: string
   } | null>(null)
+  const [showOrgChart, setShowOrgChart] = useState(false)
   const [error, setError] = useState('')
 
   const loadEmployees = useCallback(async () => {
@@ -110,6 +124,53 @@ export default function Team() {
           {error}
         </p>
       )}
+
+      <div>
+        <button
+          onClick={() => setShowOrgChart((prev) => !prev)}
+          className="w-full flex items-center justify-between gap-3 px-5 py-4 rounded-xl border border-yellow-200 bg-yellow-50/60 hover:bg-yellow-50 hover:border-yellow-300 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-yellow-100 text-yellow-700">
+              <Users className="h-5 w-5" />
+            </div>
+            <div className="text-left">
+              <h2 className="text-lg font-semibold text-slate-800">Organograma</h2>
+              <p className="text-xs text-muted-foreground">
+                {showOrgChart
+                  ? 'Clique para ocultar a estrutura hierárquica'
+                  : 'Clique para visualizar a estrutura hierárquica'}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                'text-xs font-medium px-2.5 py-1 rounded-full border transition-colors',
+                showOrgChart
+                  ? 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                  : 'bg-white text-slate-500 border-slate-200',
+              )}
+            >
+              {showOrgChart ? 'Visível' : 'Oculto'}
+            </span>
+            {showOrgChart ? (
+              <EyeOff className="h-5 w-5 text-yellow-600 group-hover:text-yellow-700" />
+            ) : (
+              <Eye className="h-5 w-5 text-slate-400 group-hover:text-yellow-600" />
+            )}
+          </div>
+        </button>
+        {showOrgChart && (
+          <div className="mt-3 animate-fade-in-up">
+            {loading ? (
+              <Skeleton className="h-[600px] w-full rounded-xl" />
+            ) : (
+              <OrgChart employees={employees} />
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="bg-white border rounded-lg shadow-sm">
         <div className="p-4 border-b bg-slate-50/50 rounded-t-lg">

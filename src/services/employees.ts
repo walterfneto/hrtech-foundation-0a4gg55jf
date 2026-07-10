@@ -68,3 +68,11 @@ export async function createEmployeeWithUser(data: {
 export async function deleteEmployee(id: string) {
   return pb.collection('employees').delete(id)
 }
+
+export async function updateEmployeeManager(id: string, managerId: string | null) {
+  return pb.collection('employees').update(id, { manager: managerId || '' })
+}
+
+export async function batchUpdateManagers(updates: Array<{ id: string; manager: string | null }>) {
+  return Promise.all(updates.map((u) => updateEmployeeManager(u.id, u.manager)))
+}
