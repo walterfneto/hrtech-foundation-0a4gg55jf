@@ -26,13 +26,11 @@ export async function updateTask(id: string, data: Partial<TaskRecord>) {
 
 export async function fetchFeedbacks(): Promise<FeedbackRecord[]> {
   const cid = getCurrentCompanyId()
-  return pb
-    .collection('feedbacks')
-    .getFullList({
-      filter: `company="${cid}"`,
-      expand: 'sender.user,receiver.user',
-      sort: '-created',
-    })
+  return pb.collection('feedbacks').getFullList({
+    filter: `company="${cid}"`,
+    expand: 'sender.user,receiver.user',
+    sort: '-created',
+  })
 }
 
 export async function createFeedback(data: Partial<FeedbackRecord>) {

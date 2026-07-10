@@ -26,6 +26,14 @@ export async function fetchMyOneOnOnes(employeeId: string): Promise<OneOnOneReco
   })
 }
 
+export async function fetchAllOneOnOnes(employeeId: string): Promise<OneOnOneRecord[]> {
+  return pb.collection('one_on_ones').getFullList({
+    filter: `employee="${employeeId}" || manager="${employeeId}"`,
+    expand: 'employee.user,manager.user,company',
+    sort: '-scheduled_at',
+  })
+}
+
 export async function createOneOnOne(data: {
   employee: string
   manager: string
@@ -49,4 +57,8 @@ export async function updateOneOnOne(
   if (data.notes !== undefined) update.notes = JSON.stringify(data.notes)
   if (data.status !== undefined) update.status = data.status
   return pb.collection('one_on_ones').update(id, update)
+}
+
+export async function deleteOneOnOne(id: string) {
+  return pb.collection('one_on_ones').delete(id)
 }
