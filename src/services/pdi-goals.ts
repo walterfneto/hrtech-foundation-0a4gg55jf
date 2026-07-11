@@ -14,7 +14,7 @@ export async function fetchCompanyGoals(): Promise<PdiGoalRecord[]> {
   if (!cid) return []
   return pb.collection('pdi_goals').getFullList({
     filter: `company="${cid}"`,
-    expand: 'employee',
+    expand: 'employee.user',
     sort: '-created',
   })
 }

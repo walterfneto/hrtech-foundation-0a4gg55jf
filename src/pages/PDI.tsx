@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback } from 'react'
-import { fetchPdiGoals, deletePdiGoal } from '@/services/pdi-goals'
+import { fetchCompanyGoals, deletePdiGoal } from '@/services/pdi-goals'
 import { useAuth } from '@/hooks/use-auth'
 import { useRealtime } from '@/hooks/use-realtime'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Plus, MoreVertical, Pencil, Trash2, FileDown } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
@@ -29,8 +30,12 @@ export default function PDI() {
   const [deleteOpen, setDeleteOpen] = useState(false)
 
   const load = useCallback(async () => {
-    if (employee) setGoals(await fetchPdiGoals(employee.id))
-  }, [employee])
+    try {
+      setGoals(await fetchCompanyGoals())
+    } catch {
+      /* */
+    }
+  }, [])
 
   useEffect(() => {
     load()
@@ -42,11 +47,12 @@ export default function PDI() {
 
   const handlePdf = () => {
     exportToPdf({
-      title: 'Plano de Desenvolvimento Individual (PDI)',
+      title: 'Planos de Desenvolvimento (PDI)',
       subtitle: employee?.expand?.user?.name ?? 'Colaborador',
       sections: goals.map((g) => ({
         heading: g.title,
         items: [
+          { label: 'Colaborador', value: g.expand?.employee?.expand?.user?.name ?? 'N/A' },
           { label: 'Status', value: g.status.replace('_', ' ') },
           { label: 'Progresso', value: `${g.progress}%` },
           ...(g.due_date
@@ -63,7 +69,7 @@ export default function PDI() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-            Meu Desenvolvimento (PDI)
+            Planos de Desenvolvimento (PDI)
           </h1>
           <p className="text-muted-foreground mt-1">
             Transforme lacunas em ações concretas de crescimento.
@@ -73,7 +79,10 @@ export default function PDI() {
           <Button variant="outline" onClick={handlePdf} disabled={goals.length === 0}>
             <FileDown className="mr-2 h-4 w-4" /> Exportar PDF
           </Button>
-          <Button className="shadow-sm" onClick={() => setDialogOpen(true)}>
+          <Button
+            className="shadow-sm active:scale-95 transition-all"
+            onClick={() => setDialogOpen(true)}
+          >
             <Plus className="mr-2 h-4 w-4" /> Nova Área
           </Button>
         </div>
@@ -85,6 +94,16 @@ export default function PDI() {
             <CardHeader className="pb-4">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Avatar className="h-6 w-6 border">
+                      <AvatarFallback className="text-xs">
+                        {g.expand?.employee?.expand?.user?.name?.charAt(0) ?? '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="text-sm font-medium text-slate-600">
+                      {g.expand?.employee?.expand?.user?.name ?? 'Desconhecido'}
+                    </span>
+                  </div>
                   <Badge
                     variant="secondary"
                     className="bg-emerald-50 text-emerald-700 border-emerald-200 mb-2"
@@ -138,14 +157,12 @@ export default function PDI() {
         )}
       </div>
 
-      {employee && (
-        <AddPdiDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          onCreated={load}
-          employeeId={employee.id}
-        />
-      )}
+      <AddPdiDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onCreated={load}
+        defaultEmployeeId={employee?.id}
+      />
 
       <EditPdiDialog goal={editGoal} open={editOpen} onOpenChange={setEditOpen} onUpdated={load} />
 

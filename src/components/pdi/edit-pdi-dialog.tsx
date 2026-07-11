@@ -22,14 +22,21 @@ import { Slider } from '@/components/ui/slider'
 import { Loader2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { updatePdiGoal } from '@/services/pdi-goals'
+import { fetchEmployees } from '@/services/employees'
 import { extractFieldErrors, type FieldErrors } from '@/lib/pocketbase/errors'
-import type { PdiGoalRecord } from '@/lib/types'
+import type { PdiGoalRecord, EmployeeRecord } from '@/lib/types'
 
 const STATUS_OPTIONS = [
   { value: 'todo', label: 'A Fazer' },
   { value: 'in_progress', label: 'Em Progresso' },
   { value: 'completed', label: 'Concluído' },
 ] as const
+
+function toDateInput(dateStr: string): string {
+  if (!dateStr) return ''
+  const parts = dateStr.split(' ')[0].split('T')[0]
+  return parts || ''
+}
 
 interface Props {
   goal: PdiGoalRecord | null
@@ -39,6 +46,7 @@ interface Props {
 }
 
 export function EditPdiDialog({ goal, open, onOpenChange, onUpdated }: Props) {
+  const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [form, setForm] = useState({
@@ -47,7 +55,15 @@ export function EditPdiDialog({ goal, open, onOpenChange, onUpdated }: Props) {
     status: 'todo',
     progress: 0,
     due_date: '',
+    employee: '',
   })
+
+  useEffect(() => {
+    if (!open) return
+    fetchEmployees()
+      .then(setEmployees)
+      .catch(() => {})
+  }, [open])
 
   useEffect(() => {
     if (goal && open) {
@@ -56,7 +72,8 @@ export function EditPdiDialog({ goal, open, onOpenChange, onUpdated }: Props) {
         description: goal.description || '',
         status: goal.status || 'todo',
         progress: goal.progress ?? 0,
-        due_date: goal.due_date || '',
+        due_date: toDateInput(goal.due_date),
+        employee: goal.employee || '',
       })
       setFieldErrors({})
     }
@@ -73,6 +90,7 @@ export function EditPdiDialog({ goal, open, onOpenChange, onUpdated }: Props) {
         status: form.status,
         progress: form.progress,
         due_date: form.due_date,
+        employee: form.employee,
       })
       toast.success('PDI atualizado com sucesso!')
       onUpdated()
@@ -95,7 +113,26 @@ export function EditPdiDialog({ goal, open, onOpenChange, onUpdated }: Props) {
           </DialogTitle>
           <DialogDescription>Atualize as informações do PDI.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-2">
+        <div className="grid gap-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
+          <div className="grid gap-2">
+            <Label>Colaborador *</Label>
+            <Select
+              value={form.employee || 'none'}
+              onValueChange={(v) => setForm({ ...form, employee: v === 'none' ? '' : v })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecionar colaborador" />
+              </SelectTrigger>
+              <SelectContent>
+                {employees.map((e) => (
+                  <SelectItem key={e.id} value={e.id}>
+                    {e.expand?.user?.name ?? 'Desconhecido'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {fieldErrors.employee && <p className="text-sm text-red-500">{fieldErrors.employee}</p>}
+          </div>
           <div className="grid gap-2">
             <Label>Título *</Label>
             <Input
@@ -151,7 +188,7 @@ export function EditPdiDialog({ goal, open, onOpenChange, onUpdated }: Props) {
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={submitting || !form.title}>
+          <Button onClick={handleSubmit} disabled={submitting || !form.title || !form.employee}>
             {submitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Salvando...

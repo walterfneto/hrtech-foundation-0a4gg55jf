@@ -56,7 +56,7 @@ export function AddOneOnOneDialog({ open, onOpenChange, onCreated, managerId }: 
       await createOneOnOne({
         employee: form.employee,
         manager: managerId,
-        scheduled_at: form.scheduled_at,
+        scheduled_at: new Date(form.scheduled_at).toISOString(),
         notes,
         status: 'planned',
       })
@@ -67,7 +67,7 @@ export function AddOneOnOneDialog({ open, onOpenChange, onCreated, managerId }: 
     } catch (err) {
       const errors = extractFieldErrors(err)
       setFieldErrors(errors)
-      if (Object.keys(errors).length === 0) toast.error('Erro ao agendar 1:1.')
+      toast.error('Erro ao agendar 1:1. Verifique os campos obrigatórios.')
     } finally {
       setSubmitting(false)
     }

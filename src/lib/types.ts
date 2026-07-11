@@ -184,6 +184,9 @@ export interface PdiGoalRecord {
   company: string
   created: string
   updated: string
+  expand?: {
+    employee: EmployeeRecord
+  }
 }
 
 export interface HRRequestRecord {

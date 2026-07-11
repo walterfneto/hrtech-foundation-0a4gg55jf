@@ -42,9 +42,13 @@ export async function createOneOnOne(data: {
   status: string
 }) {
   const cid = getCurrentCompanyId()
+  if (!cid) throw new Error('Company context not found')
   return pb.collection('one_on_ones').create({
-    ...data,
-    notes: data.notes ? JSON.stringify(data.notes) : '',
+    employee: data.employee,
+    manager: data.manager,
+    scheduled_at: data.scheduled_at,
+    notes: data.notes || null,
+    status: data.status,
     company: cid,
   })
 }
@@ -54,7 +58,7 @@ export async function updateOneOnOne(
   data: { notes?: Record<string, any>; status?: string },
 ) {
   const update: Record<string, any> = {}
-  if (data.notes !== undefined) update.notes = JSON.stringify(data.notes)
+  if (data.notes !== undefined) update.notes = data.notes
   if (data.status !== undefined) update.status = data.status
   return pb.collection('one_on_ones').update(id, update)
 }
