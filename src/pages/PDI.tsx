@@ -146,6 +146,18 @@ export default function PDI() {
           employeeId={employee.id}
         />
       )}
+
+      <EditPdiDialog goal={editGoal} open={editOpen} onOpenChange={setEditOpen} onUpdated={load} />
+
+      <DeleteDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title="Excluir PDI"
+        description="Tem certeza que deseja excluir esta área de desenvolvimento? Esta ação não pode ser desfeita."
+        onConfirm={async () => {
+          if (deleteGoal) await deletePdiGoal(deleteGoal.id)
+        }}
+      />
     </div>
   )
 }
