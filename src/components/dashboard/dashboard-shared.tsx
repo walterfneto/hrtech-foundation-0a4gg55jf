@@ -47,7 +47,7 @@ export function FeedbackItem({ feedback }: { feedback: FeedbackRecord }) {
   const Icon = config.icon
 
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg border bg-slate-50/50 hover:bg-slate-50 transition-colors">
+    <div className="flex items-start gap-3 p-3 rounded-lg border bg-muted/40 hover:bg-muted/70 transition-colors">
       <div className={`mt-0.5 ${config.color}`}>
         <Icon className="h-4 w-4" />
       </div>
@@ -61,7 +61,7 @@ export function FeedbackItem({ feedback }: { feedback: FeedbackRecord }) {
             {receiverUser?.name ?? receiver?.job_title ?? 'Colaborador'}
           </span>
         </div>
-        <p className="text-sm text-slate-600 line-clamp-2">{feedback.content}</p>
+        <p className="text-sm text-muted-foreground line-clamp-2">{feedback.content}</p>
         <Badge variant="outline" className="mt-1 text-[10px]">
           {config.label}
         </Badge>
@@ -73,7 +73,7 @@ export function FeedbackItem({ feedback }: { feedback: FeedbackRecord }) {
 export function CycleItem({ cycle }: { cycle: EvaluationCycleRecord }) {
   const templateName = cycle.expand?.template?.name ?? 'Sem template'
   return (
-    <div className="flex items-center justify-between p-3 bg-slate-50 border rounded-lg">
+    <div className="flex items-center justify-between p-3 bg-muted/40 border rounded-lg">
       <div className="min-w-0">
         <p className="text-sm font-medium truncate">{cycle.title}</p>
         <p className="text-xs text-muted-foreground truncate">{templateName}</p>
@@ -96,12 +96,12 @@ export function GoalProgressItem({ goal }: { goal: PdiGoalRecord }) {
         : 'A Fazer'
   const statusColor =
     goal.status === 'completed'
-      ? 'text-teal-600 bg-teal-100'
+      ? 'text-teal-600 bg-teal-100 dark:text-teal-300 dark:bg-teal-950'
       : goal.status === 'in_progress'
-        ? 'text-amber-600 bg-amber-100'
-        : 'text-slate-600 bg-slate-100'
+        ? 'text-amber-600 bg-amber-100 dark:text-amber-300 dark:bg-amber-950'
+        : 'text-muted-foreground bg-muted'
   return (
-    <div className="p-3 bg-slate-50 border rounded-lg">
+    <div className="p-3 bg-muted/40 border rounded-lg">
       <div className="flex justify-between items-start mb-2 gap-2">
         <p className="text-sm font-medium leading-tight">{goal.title}</p>
         <span
@@ -110,7 +110,7 @@ export function GoalProgressItem({ goal }: { goal: PdiGoalRecord }) {
           {statusLabel}
         </span>
       </div>
-      <div className="w-full bg-slate-200 rounded-full h-1.5">
+      <div className="w-full bg-muted rounded-full h-1.5">
         <div
           className="bg-primary rounded-full h-1.5 transition-all"
           style={{ width: `${pct}%` }}

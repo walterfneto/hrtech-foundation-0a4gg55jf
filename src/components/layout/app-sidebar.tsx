@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import logoUrl from '@/assets/whatsapp-image-2026-07-11-at-08.27.08-64d07.jpeg'
 import {
   Users,
   LayoutDashboard,
@@ -8,7 +9,6 @@ import {
   MessageSquare,
   TrendingUp,
   FolderOpen,
-  UserCheck,
 } from 'lucide-react'
 import {
   Sidebar,
@@ -40,13 +40,18 @@ export function AppSidebar() {
 
   return (
     <Sidebar>
-      <SidebarHeader className="h-16 flex items-center justify-center border-b">
-        <div className="flex items-center gap-2 font-bold text-xl text-primary w-full px-4">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-primary-foreground shrink-0">
-            C
+      <SidebarHeader className="h-16 flex items-center border-b px-3">
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 w-full px-2 py-2 rounded-md hover:bg-sidebar-accent transition-colors"
+        >
+          <div className="h-9 w-9 rounded-lg overflow-hidden shrink-0 ring-1 ring-border shadow-sm">
+            <img src={logoUrl} alt="Caminho" className="h-full w-full object-cover" />
           </div>
-          <span className="truncate">Caminho</span>
-        </div>
+          <span className="text-lg font-semibold text-sidebar-foreground hidden sm:inline tracking-tight">
+            caminho
+          </span>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

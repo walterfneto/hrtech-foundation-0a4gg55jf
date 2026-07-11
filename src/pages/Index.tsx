@@ -10,9 +10,9 @@ export default function Index() {
 
   return (
     <div className="space-y-6">
-      <div className="animate-fade-in">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Visão Geral</h1>
-        <p className="text-muted-foreground mt-1">
+      <div className="animate-fade-in soft-primary-surface rounded-lg p-5">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Visão Geral</h1>
+        <p className="text-muted-foreground mt-1 text-sm">
           Bem-vindo de volta. Aqui está o resumo do seu espaço.
         </p>
       </div>

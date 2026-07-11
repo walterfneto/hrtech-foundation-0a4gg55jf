@@ -7,9 +7,9 @@ export default function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className="bg-slate-50 flex flex-col min-h-screen overflow-hidden">
+      <SidebarInset className="bg-background flex flex-col min-h-screen overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-auto p-4 md:p-6 w-full max-w-7xl mx-auto">
+        <main className="flex-1 overflow-auto p-4 md:p-6 w-full max-w-7xl mx-auto bg-muted/20">
           <Outlet />
         </main>
       </SidebarInset>

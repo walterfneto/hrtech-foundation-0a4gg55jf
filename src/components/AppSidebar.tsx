@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
+import logoUrl from '@/assets/whatsapp-image-2026-07-11-at-08.27.08-64d07.jpeg'
 import {
   Home,
   Users,
@@ -42,12 +43,14 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-border bg-sidebar" variant="inset">
       <SidebarHeader className="h-16 flex items-center px-4 justify-center border-b border-sidebar-border">
-        <div className="flex items-center gap-2 overflow-hidden py-2">
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0 shadow-sm">
-            <span className="text-primary-foreground text-sm font-bold">C</span>
+        <Link to="/" className="flex items-center gap-2.5 hover:opacity-90 transition-opacity">
+          <div className="h-9 w-9 rounded-md overflow-hidden shrink-0 ring-1 ring-sidebar-border bg-background">
+            <img src={logoUrl} alt="Caminho" className="h-full w-full object-cover" />
           </div>
-          <span className="text-xl font-bold text-sidebar-foreground truncate">Caminho</span>
-        </div>
+          <span className="text-lg font-bold text-sidebar-foreground truncate hidden sm:inline tracking-tight">
+            caminho
+          </span>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

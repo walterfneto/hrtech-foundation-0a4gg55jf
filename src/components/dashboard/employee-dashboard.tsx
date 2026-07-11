@@ -39,7 +39,7 @@ export function EmployeeDashboard({ data }: { data: DashboardData }) {
             {pendingTasks.slice(0, 3).map((t) => (
               <div
                 key={t.id}
-                className="flex justify-between items-center bg-slate-50 p-3 rounded border"
+                className="flex justify-between items-center bg-muted/50 p-3 rounded border"
               >
                 <span className="text-sm font-medium">{t.title}</span>
                 <Badge variant="destructive" className="bg-red-500">
@@ -47,7 +47,7 @@ export function EmployeeDashboard({ data }: { data: DashboardData }) {
                 </Badge>
               </div>
             ))}
-            <Button asChild variant="link" className="px-0 text-red-600">
+            <Button asChild variant="link" className="px-0 text-red-600 dark:text-red-400">
               <Link to="/tarefas">Ver todas as tarefas</Link>
             </Button>
           </CardContent>

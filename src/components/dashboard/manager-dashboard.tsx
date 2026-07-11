@@ -78,7 +78,7 @@ export function ManagerDashboard({ data }: { data: DashboardData }) {
                 return (
                   <div
                     key={m.id}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-slate-50/50 hover:bg-slate-50 transition-colors"
+                    className="flex items-center justify-between p-3 rounded-lg border bg-muted/50 hover:bg-muted transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <Avatar>

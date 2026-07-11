@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/use-auth'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 function getInitials(name: string): string {
   if (!name) return '?'
@@ -31,7 +31,7 @@ export function Header() {
   }
 
   return (
-    <header className="h-16 border-b bg-white flex items-center justify-between px-4 sticky top-0 z-10">
+    <header className="h-16 border-b bg-background/80 backdrop-blur-sm flex items-center justify-between px-4 sticky top-0 z-10">
       <div className="flex items-center gap-4 flex-1">
         <SidebarTrigger />
         <div className="hidden md:flex relative w-64">
@@ -46,12 +46,19 @@ export function Header() {
         <Button variant="ghost" size="icon" className="hidden md:flex text-muted-foreground">
           <HelpCircle className="h-5 w-5" />
         </Button>
-        <Button variant="ghost" size="icon" className="hidden md:flex text-muted-foreground">
-          <Settings className="h-5 w-5" />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden md:flex text-muted-foreground"
+          asChild
+        >
+          <Link to="/configuracoes">
+            <Settings className="h-5 w-5" />
+          </Link>
         </Button>
         <Button variant="ghost" size="icon" className="relative text-muted-foreground">
           <Bell className="h-5 w-5" />
-          <span className="absolute top-2 right-2 h-2 w-2 bg-destructive rounded-full" />
+          <span className="absolute top-2 right-2 h-2 w-2 bg-destructive rounded-full ring-2 ring-background" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -70,15 +77,17 @@ export function Header() {
                   {user?.email ?? ''}
                 </p>
                 <div className="flex items-center gap-2 mt-2">
-                  <span className="text-[10px] uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
+                  <span className="text-[10px] uppercase tracking-wider font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded ring-1 ring-primary/15">
                     {role}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
-              <Settings className="w-4 h-4 mr-2" /> Configurações
+            <DropdownMenuItem className="cursor-pointer" asChild>
+              <Link to="/configuracoes">
+                <Settings className="w-4 h-4 mr-2" /> Configurações
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
