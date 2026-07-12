@@ -160,12 +160,19 @@ export interface TaskRecord {
   expand?: { assignee: EmployeeRecord }
 }
 
+export type ImprovementStatus = 'pending' | 'in_progress' | 'improved' | 'no_change'
+
 export interface FeedbackRecord {
   id: string
   sender: string
   receiver: string
   type: 'public_praise' | 'confidential_improvement' | '1_on_1'
   content: string
+  context: string
+  impact: string
+  action_plan: string
+  follow_up_notes: string
+  improvement_status: ImprovementStatus
   tags: any
   company: string
   created: string

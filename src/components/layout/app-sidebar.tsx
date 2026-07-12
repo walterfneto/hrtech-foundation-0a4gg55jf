@@ -9,7 +9,9 @@ import {
   MessageSquare,
   TrendingUp,
   FolderOpen,
+  ShieldCheck,
 } from 'lucide-react'
+import { useAuth } from '@/hooks/use-auth'
 import {
   Sidebar,
   SidebarContent,
@@ -21,22 +23,27 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar'
 
-const items = [
-  { title: 'Início', url: '/', icon: LayoutDashboard },
-  { title: 'Equipe', url: '/equipe', icon: Users },
-  { title: 'Avaliações', url: '/avaliacoes', icon: FileText },
-  { title: 'Metas e OKRs', url: '/metas', icon: Target },
-  { title: '1:1s', url: '/1a1', icon: CalendarDays },
-  { title: 'Feedback', url: '/feedback', icon: MessageSquare },
-  { title: 'PDI', url: '/pdi', icon: TrendingUp },
-  { title: 'Tarefas', url: '/tarefas', icon: FolderOpen },
-  { title: 'Clima', url: '/clima', icon: Target },
-  { title: 'Recrutamento', url: '/recrutamento', icon: Users },
-  { title: 'Analytics', url: '/analytics', icon: TrendingUp },
-]
-
 export function AppSidebar() {
   const location = useLocation()
+  const { role } = useAuth()
+  const isManager = role === 'Gestor' || role === 'Admin RH'
+
+  const items = [
+    { title: 'Início', url: '/', icon: LayoutDashboard },
+    { title: 'Equipe', url: '/equipe', icon: Users },
+    { title: 'Avaliações', url: '/avaliacoes', icon: FileText },
+    { title: 'Metas e OKRs', url: '/metas', icon: Target },
+    { title: '1:1s', url: '/1a1', icon: CalendarDays },
+    { title: 'Feedback', url: '/feedback', icon: MessageSquare },
+    { title: 'PDI', url: '/pdi', icon: TrendingUp },
+    { title: 'Tarefas', url: '/tarefas', icon: FolderOpen },
+    { title: 'Clima', url: '/clima', icon: Target },
+    ...(isManager
+      ? [{ title: 'Painel do Líder', url: '/painel-do-lider', icon: ShieldCheck }]
+      : []),
+    { title: 'Recrutamento', url: '/recrutamento', icon: Users },
+    { title: 'Analytics', url: '/analytics', icon: TrendingUp },
+  ]
 
   return (
     <Sidebar>

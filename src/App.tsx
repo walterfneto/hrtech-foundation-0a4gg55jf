@@ -22,6 +22,7 @@ import Tasks from '@/pages/Tasks'
 import Climate from '@/pages/Climate'
 import Recruitment from '@/pages/Recruitment'
 import Analytics from '@/pages/Analytics'
+import LeaderDashboard from '@/pages/LeaderDashboard'
 
 const App = () => (
   <ThemeProvider>
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="/clima" element={<Climate />} />
                 <Route path="/recrutamento" element={<Recruitment />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route path="/painel-do-lider" element={<LeaderDashboard />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
