@@ -1,6 +1,6 @@
 import pb from '@/lib/pocketbase/client'
 import { getCurrentCompanyId } from '@/services/helpers'
-import type { CandidateRecord } from '@/lib/types'
+import type { CandidateRecord, CandidateCompetency } from '@/lib/types'
 
 export async function fetchCandidates(): Promise<CandidateRecord[]> {
   const cid = getCurrentCompanyId()
@@ -16,8 +16,10 @@ export async function createCandidate(data: {
   email: string
   phone?: string
   role?: string
-  skills?: string[]
+  competencies?: CandidateCompetency[]
   status?: string
+  observations?: string
+  interview_info?: string
 }) {
   const cid = getCurrentCompanyId()
   if (!cid) throw new Error('Company context not found')
@@ -26,17 +28,43 @@ export async function createCandidate(data: {
     email: data.email,
     phone: data.phone || '',
     role: data.role || '',
-    skills: JSON.stringify(data.skills || []),
+    skills: JSON.stringify(data.competencies || []),
     status: data.status || 'screening',
+    observations: data.observations || '',
+    interview_info: data.interview_info || '',
+    evaluation_details: JSON.stringify([]),
     company: cid,
   })
 }
 
-export async function updateCandidate(id: string, data: Partial<CandidateRecord>) {
-  const update: Record<string, any> = { ...data }
-  if (Array.isArray(data.skills)) {
-    update.skills = JSON.stringify(data.skills)
+export async function updateCandidate(
+  id: string,
+  data: Partial<CandidateRecord> & {
+    competencies?: CandidateCompetency[]
+  },
+) {
+  const update: Record<string, any> = {}
+
+  if (data.name !== undefined) update.name = data.name
+  if (data.email !== undefined) update.email = data.email
+  if (data.phone !== undefined) update.phone = data.phone
+  if (data.role !== undefined) update.role = data.role
+  if (data.status !== undefined) update.status = data.status
+  if (data.observations !== undefined) update.observations = data.observations
+  if (data.interview_info !== undefined) update.interview_info = data.interview_info
+  if (data.evaluation_details !== undefined) {
+    update.evaluation_details = JSON.stringify(data.evaluation_details)
   }
+
+  if (data.competencies !== undefined) {
+    update.skills = JSON.stringify(data.competencies)
+  } else if (Array.isArray(data.skills)) {
+    const comps = data.skills.map((s: any) =>
+      typeof s === 'string' ? { name: s, level: '', notes: '' } : s,
+    )
+    update.skills = JSON.stringify(comps)
+  }
+
   return pb.collection('candidates').update(id, update)
 }
 

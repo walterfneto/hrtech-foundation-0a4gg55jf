@@ -10,11 +10,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Loader2, UserPlus, X } from 'lucide-react'
+import { Loader2, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { createCandidate } from '@/services/candidates'
 import { extractFieldErrors, type FieldErrors } from '@/lib/pocketbase/errors'
+import { CompetencyManager } from '@/components/recruitment/competency-manager'
+import type { CandidateCompetency } from '@/lib/types'
 
 interface Props {
   open: boolean
@@ -25,26 +26,13 @@ interface Props {
 export function AddCandidateDialog({ open, onOpenChange, onCreated }: Props) {
   const [submitting, setSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
-  const [skillInput, setSkillInput] = useState('')
   const [form, setForm] = useState({
     name: '',
     email: '',
     phone: '',
     role: '',
-    skills: [] as string[],
   })
-
-  const addSkill = () => {
-    const trimmed = skillInput.trim()
-    if (trimmed && !form.skills.includes(trimmed)) {
-      setForm({ ...form, skills: [...form.skills, trimmed] })
-      setSkillInput('')
-    }
-  }
-
-  const removeSkill = (skill: string) => {
-    setForm({ ...form, skills: form.skills.filter((s) => s !== skill) })
-  }
+  const [competencies, setCompetencies] = useState<CandidateCompetency[]>([])
 
   const handleSubmit = async () => {
     setSubmitting(true)
@@ -55,12 +43,12 @@ export function AddCandidateDialog({ open, onOpenChange, onCreated }: Props) {
         email: form.email,
         phone: form.phone,
         role: form.role,
-        skills: form.skills,
+        competencies,
         status: 'screening',
       })
       toast.success('Candidato cadastrado com sucesso!')
-      setForm({ name: '', email: '', phone: '', role: '', skills: [] })
-      setSkillInput('')
+      setForm({ name: '', email: '', phone: '', role: '' })
+      setCompetencies([])
       onCreated()
       onOpenChange(false)
     } catch (err) {
@@ -127,34 +115,7 @@ export function AddCandidateDialog({ open, onOpenChange, onCreated }: Props) {
           </div>
           <div className="grid gap-2">
             <Label>Competências</Label>
-            <div className="flex gap-2">
-              <Input
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    addSkill()
-                  }
-                }}
-                placeholder="Digite e pressione Enter..."
-              />
-              <Button type="button" variant="outline" onClick={addSkill}>
-                Adicionar
-              </Button>
-            </div>
-            {form.skills.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {form.skills.map((s) => (
-                  <Badge key={s} variant="secondary" className="gap-1">
-                    {s}
-                    <button onClick={() => removeSkill(s)}>
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
+            <CompetencyManager competencies={competencies} onChange={setCompetencies} />
           </div>
         </div>
         <DialogFooter>

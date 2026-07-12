@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Select,
   SelectContent,
@@ -18,11 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Loader2, Pencil, X } from 'lucide-react'
+import { Loader2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { updateCandidate } from '@/services/candidates'
 import { extractFieldErrors, type FieldErrors } from '@/lib/pocketbase/errors'
-import type { CandidateRecord } from '@/lib/types'
+import { CompetencyManager } from '@/components/recruitment/competency-manager'
+import type { CandidateRecord, CandidateCompetency } from '@/lib/types'
 
 const STAGES = [
   { value: 'screening', label: 'Triagem' },
@@ -32,14 +33,20 @@ const STAGES = [
   { value: 'rejected', label: 'Rejeitado' },
 ] as const
 
-function parseSkills(skills: any): string[] {
-  if (!skills) return []
-  if (Array.isArray(skills)) return skills
-  try {
-    return JSON.parse(skills)
-  } catch {
-    return []
+function parseCompetencies(raw: any): CandidateCompetency[] {
+  if (!raw) return []
+  if (Array.isArray(raw)) {
+    return raw.map((s: any) => (typeof s === 'string' ? { name: s, level: '', notes: '' } : s))
   }
+  try {
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed)) {
+      return parsed.map((s: any) => (typeof s === 'string' ? { name: s, level: '', notes: '' } : s))
+    }
+  } catch {
+    /* intentionally ignored */
+  }
+  return []
 }
 
 interface Props {
@@ -52,15 +59,16 @@ interface Props {
 export function EditCandidateDialog({ candidate, open, onOpenChange, onUpdated }: Props) {
   const [submitting, setSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
-  const [skillInput, setSkillInput] = useState('')
   const [form, setForm] = useState({
     name: '',
     email: '',
     phone: '',
     role: '',
     status: 'screening',
-    skills: [] as string[],
+    observations: '',
+    interview_info: '',
   })
+  const [competencies, setCompetencies] = useState<CandidateCompetency[]>([])
 
   useEffect(() => {
     if (candidate && open) {
@@ -70,19 +78,13 @@ export function EditCandidateDialog({ candidate, open, onOpenChange, onUpdated }
         phone: candidate.phone || '',
         role: candidate.role || '',
         status: candidate.status || 'screening',
-        skills: parseSkills(candidate.skills),
+        observations: candidate.observations || '',
+        interview_info: candidate.interview_info || '',
       })
+      setCompetencies(parseCompetencies((candidate as any).skills))
       setFieldErrors({})
     }
   }, [candidate, open])
-
-  const addSkill = () => {
-    const t = skillInput.trim()
-    if (t && !form.skills.includes(t)) {
-      setForm({ ...form, skills: [...form.skills, t] })
-      setSkillInput('')
-    }
-  }
 
   const handleSubmit = async () => {
     if (!candidate) return
@@ -95,8 +97,10 @@ export function EditCandidateDialog({ candidate, open, onOpenChange, onUpdated }
         phone: form.phone,
         role: form.role,
         status: form.status,
-        skills: form.skills,
-      })
+        competencies,
+        observations: form.observations,
+        interview_info: form.interview_info,
+      } as any)
       toast.success('Candidato atualizado com sucesso!')
       onUpdated()
       onOpenChange(false)
@@ -111,14 +115,14 @@ export function EditCandidateDialog({ candidate, open, onOpenChange, onUpdated }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Pencil className="h-5 w-5" /> Editar Candidato
           </DialogTitle>
           <DialogDescription>Atualize as informações do candidato.</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-2 max-h-[60vh] overflow-y-auto pr-1">
+        <div className="grid gap-4 py-2 max-h-[65vh] overflow-y-auto pr-1">
           <div className="grid gap-2">
             <Label>Nome *</Label>
             <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -168,38 +172,25 @@ export function EditCandidateDialog({ candidate, open, onOpenChange, onUpdated }
           </div>
           <div className="grid gap-2">
             <Label>Competências</Label>
-            <div className="flex gap-2">
-              <Input
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    addSkill()
-                  }
-                }}
-                placeholder="Digite e Enter..."
-              />
-              <Button type="button" variant="outline" onClick={addSkill}>
-                Add
-              </Button>
-            </div>
-            {form.skills.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {form.skills.map((s) => (
-                  <Badge key={s} variant="secondary" className="gap-1">
-                    {s}
-                    <button
-                      onClick={() =>
-                        setForm({ ...form, skills: form.skills.filter((x) => x !== s) })
-                      }
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
+            <CompetencyManager competencies={competencies} onChange={setCompetencies} />
+          </div>
+          <div className="grid gap-2">
+            <Label>Observações Gerais</Label>
+            <Textarea
+              value={form.observations}
+              onChange={(e) => setForm({ ...form, observations: e.target.value })}
+              placeholder="Observações gerais sobre o candidato..."
+              className="min-h-[80px]"
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label>Informações da Entrevista</Label>
+            <Textarea
+              value={form.interview_info}
+              onChange={(e) => setForm({ ...form, interview_info: e.target.value })}
+              placeholder="Feedback e detalhes da entrevista..."
+              className="min-h-[80px]"
+            />
           </div>
         </div>
         <DialogFooter>

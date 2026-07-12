@@ -201,6 +201,18 @@ export interface HRRequestRecord {
   expand?: { requester: EmployeeRecord }
 }
 
+export interface CandidateCompetency {
+  name: string
+  level: 'iniciante' | 'intermediario' | 'avancado' | 'especialista' | ''
+  notes: string
+}
+
+export interface CandidateEvaluationDetail {
+  criteria: string
+  rating: number
+  comment: string
+}
+
 export interface CandidateRecord {
   id: string
   name: string
@@ -209,6 +221,9 @@ export interface CandidateRecord {
   role: string
   status: 'screening' | 'interview' | 'offer' | 'hired' | 'rejected'
   skills: string[]
+  observations: string
+  interview_info: string
+  evaluation_details: CandidateEvaluationDetail[]
   company: string
   created: string
   updated: string
