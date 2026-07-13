@@ -44,13 +44,18 @@ export function FeedbackSendForm({
   const [form, setForm] = useState({
     receiver: '',
     type: 'public_praise',
+    content: '',
     context: '',
     impact: '',
     action_plan: '',
   })
 
   const isValid =
-    form.receiver && form.context.trim() && form.impact.trim() && form.action_plan.trim()
+    form.receiver &&
+    form.content.trim() &&
+    form.context.trim() &&
+    form.impact.trim() &&
+    form.action_plan.trim()
 
   const handleSubmit = async () => {
     if (!isValid) {
@@ -64,12 +69,20 @@ export function FeedbackSendForm({
         sender: currentEmployeeId,
         receiver: form.receiver,
         type: form.type,
+        content: form.content.trim(),
         context: form.context.trim(),
         impact: form.impact.trim(),
         action_plan: form.action_plan.trim(),
       })
       toast.success('Feedback enviado com sucesso!')
-      setForm({ receiver: '', type: 'public_praise', context: '', impact: '', action_plan: '' })
+      setForm({
+        receiver: '',
+        type: 'public_praise',
+        content: '',
+        context: '',
+        impact: '',
+        action_plan: '',
+      })
       onSubmitted()
     } catch (err) {
       const errors = extractFieldErrors(err)
@@ -82,7 +95,7 @@ export function FeedbackSendForm({
 
   return (
     <Card className="rounded-lg border bg-card shadow-subtle">
-      <CardContent className="p-6 space-y-5">
+      <CardContent className="p-6 space-y-6">
         <div className="flex items-start gap-2 rounded-lg bg-accent border p-3">
           <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
           <p className="text-xs text-muted-foreground leading-relaxed">
@@ -123,6 +136,17 @@ export function FeedbackSendForm({
               )
             })}
           </div>
+        </div>
+
+        <div className="grid gap-2">
+          <Label className="text-sm font-medium">Mensagem Principal *</Label>
+          <Textarea
+            className="min-h-[100px] bg-muted/50"
+            placeholder="Escreva a mensagem principal do feedback..."
+            value={form.content}
+            onChange={(e) => setForm({ ...form, content: e.target.value })}
+          />
+          {fieldErrors.content && <p className="text-sm text-destructive">{fieldErrors.content}</p>}
         </div>
 
         <div className="grid gap-2">
@@ -193,21 +217,23 @@ export function FeedbackSendForm({
           )}
         </div>
 
-        <Button
-          className="w-full sm:w-auto transition-colors"
-          onClick={handleSubmit}
-          disabled={submitting || !isValid}
-        >
-          {submitting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...
-            </>
-          ) : (
-            <>
-              <Send className="mr-2 h-4 w-4" /> Enviar Feedback
-            </>
-          )}
-        </Button>
+        <div className="pt-6 border-t">
+          <Button
+            className="w-full sm:w-auto bg-primary text-primary-foreground text-sm font-medium transition-colors hover:bg-primary/90"
+            onClick={handleSubmit}
+            disabled={submitting || !isValid}
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Enviando...
+              </>
+            ) : (
+              <>
+                <Send className="mr-2 h-4 w-4" /> Enviar Feedback
+              </>
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   )

@@ -16,6 +16,7 @@ export async function createFeedback(data: {
   sender: string
   receiver: string
   type: string
+  content: string
   context: string
   impact: string
   action_plan: string
@@ -24,7 +25,6 @@ export async function createFeedback(data: {
   if (!cid) throw new Error('Company context not found')
   return pb.collection('feedbacks').create({
     ...data,
-    content: data.context,
     company: cid,
     improvement_status: 'pending',
   })

@@ -14,6 +14,7 @@ export default function Feedback() {
   const [feedbacks, setFeedbacks] = useState<FeedbackRecord[]>([])
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [loading, setLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('recebidos')
 
   const load = useCallback(async () => {
     try {
@@ -55,6 +56,11 @@ export default function Feedback() {
 
   const emptyMsg = (msg: string) => <p className="text-center text-muted-foreground py-8">{msg}</p>
 
+  const handleSubmitted = () => {
+    load()
+    setActiveTab('recebidos')
+  }
+
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-8">
       <div>
@@ -64,7 +70,7 @@ export default function Feedback() {
         </p>
       </div>
 
-      <Tabs defaultValue="recebidos" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="recebidos">Recebidos</TabsTrigger>
           <TabsTrigger value="enviados">Enviados</TabsTrigger>
@@ -97,7 +103,11 @@ export default function Feedback() {
         </TabsContent>
 
         <TabsContent value="enviar" className="mt-6">
-          <FeedbackSendForm employees={employees} currentEmployeeId={empId} onSubmitted={load} />
+          <FeedbackSendForm
+            employees={employees}
+            currentEmployeeId={empId}
+            onSubmitted={handleSubmitted}
+          />
         </TabsContent>
       </Tabs>
     </div>
