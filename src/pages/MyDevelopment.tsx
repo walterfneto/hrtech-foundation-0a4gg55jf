@@ -1,13 +1,24 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { PerformanceEvolutionChart } from '@/components/performance/performance-evolution-chart'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Target } from 'lucide-react'
 import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
+import { OneOnOneHistory } from '@/components/one-on-ones/one-on-one-history'
+import { fetchMyOneOnOnes, type OneOnOneRecord } from '@/services/one-on-ones'
 
 export default function MyDevelopment() {
   const { employee, loading } = useAuth()
   const employeeId = employee?.id ?? ''
+  const [oneOnOnes, setOneOnOnes] = useState<OneOnOneRecord[]>([])
+
+  useEffect(() => {
+    if (!employeeId) return
+    fetchMyOneOnOnes(employeeId)
+      .then(setOneOnOnes)
+      .catch(() => {})
+  }, [employeeId])
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -59,6 +70,7 @@ export default function MyDevelopment() {
           </div>
         </CardContent>
       </Card>
+      <OneOnOneHistory meetings={oneOnOnes} />
     </div>
   )
 }

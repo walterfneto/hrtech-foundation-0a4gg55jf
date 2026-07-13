@@ -10,12 +10,26 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
-import { Calendar, Plus, Video, MoreVertical, Pencil, Trash2, FileDown } from 'lucide-react'
+import {
+  Calendar,
+  Plus,
+  Video,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  FileDown,
+  Target,
+  FileText,
+  TrendingUp,
+  TrendingDown,
+  Clock,
+} from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useRealtime } from '@/hooks/use-realtime'
 import { fetchAllOneOnOnes, deleteOneOnOne, type OneOnOneRecord } from '@/services/one-on-ones'
 import { AddOneOnOneDialog } from '@/components/one-on-ones/add-one-on-one-dialog'
 import { EditOneOnOneDialog } from '@/components/one-on-ones/edit-one-on-one-dialog'
+import { OneOnOneHistory } from '@/components/one-on-ones/one-on-one-history'
 import { DeleteDialog } from '@/components/shared/delete-dialog'
 import { exportToPdf } from '@/lib/pdf-utils'
 
@@ -25,20 +39,21 @@ const STATUS_BADGE: Record<string, { label: string; class: string }> = {
   cancelled: { label: 'Cancelada', class: 'bg-rose-50 text-rose-700' },
 }
 
-function parseNotes(notes: any): Record<string, any> {
-  if (!notes) return {}
-  if (typeof notes === 'string') {
-    try {
-      return JSON.parse(notes)
-    } catch {
-      return {}
-    }
-  }
-  return notes
-}
+const DETAIL_FIELDS = [
+  { key: 'objective', label: 'Objetivo / Finalidade', icon: Target, color: 'text-slate-500' },
+  { key: 'reason', label: 'Motivo', icon: FileText, color: 'text-slate-500' },
+  { key: 'positive_points', label: 'O que está bom', icon: TrendingUp, color: 'text-emerald-600' },
+  {
+    key: 'improvement_points',
+    label: 'O que precisa melhorar',
+    icon: TrendingDown,
+    color: 'text-amber-600',
+  },
+  { key: 'report', label: 'Relatório da Reunião', icon: FileText, color: 'text-slate-500' },
+] as const
 
 export default function OneOnOnes() {
-  const { employee } = useAuth()
+  const { employee, role } = useAuth()
   const [meetings, setMeetings] = useState<OneOnOneRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -71,22 +86,17 @@ export default function OneOnOnes() {
   })
 
   const selected = meetings.find((m) => m.id === selectedId) ?? null
-  const notes = parseNotes(selected?.notes)
   const selIsMgr = selected?.manager === employee?.id
   const selOther = selIsMgr ? selected?.expand?.employee : selected?.expand?.manager
   const otherName = selOther?.expand?.user?.name ?? selOther?.job_title ?? 'Colaborador'
+  const canEdit = selIsMgr || role === 'Admin RH'
 
   const handlePdf = () => {
     if (!selected) return
     const dateStr = selected.scheduled_at
       ? new Date(selected.scheduled_at).toLocaleString('pt-BR')
       : 'N/A'
-    const sections: Array<{
-      heading: string
-      items?: Array<{ label: string; value: string }>
-      content?: string
-      list?: Array<{ text: string; done?: boolean }>
-    }> = [
+    const sections: Array<any> = [
       {
         heading: 'Informações',
         items: [
@@ -96,14 +106,20 @@ export default function OneOnOnes() {
         ],
       },
     ]
-    if (notes.agenda?.length)
+    if (selected.objective)
+      sections.push({ heading: 'Objetivo / Finalidade', content: selected.objective })
+    if (selected.reason) sections.push({ heading: 'Motivo', content: selected.reason })
+    if (selected.positive_points)
+      sections.push({ heading: 'O que está bom', content: selected.positive_points })
+    if (selected.improvement_points)
+      sections.push({ heading: 'O que precisa melhorar', content: selected.improvement_points })
+    if (selected.report)
+      sections.push({ heading: 'Relatório da Reunião', content: selected.report })
+    if (selected.action_deadline)
       sections.push({
-        heading: 'Pauta',
-        list: notes.agenda.map((a: any) => ({ text: typeof a === 'string' ? a : a.text })),
+        heading: 'Prazo',
+        content: new Date(selected.action_deadline).toLocaleDateString('pt-BR'),
       })
-    if (notes.summary) sections.push({ heading: 'Resumo', content: notes.summary })
-    if (notes.privateNotes)
-      sections.push({ heading: 'Notas Privadas', content: notes.privateNotes })
     exportToPdf({
       title: 'Relatório de Reunião 1:1',
       subtitle: `${otherName} • ${dateStr}`,
@@ -131,7 +147,7 @@ export default function OneOnOnes() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Reuniões 1:1</h1>
-          <p className="text-slate-500 mt-1">Alinhamento, pautas e histórico.</p>
+          <p className="text-slate-500 mt-1">Alinhamento estruturado, relatórios e histórico.</p>
         </div>
         <Button
           className="shadow-sm active:scale-95 transition-all"
@@ -208,73 +224,60 @@ export default function OneOnOnes() {
                     <Button variant="outline" size="sm" onClick={handlePdf}>
                       <FileDown className="w-4 h-4 mr-1" /> PDF
                     </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="w-4 h-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setEditOpen(true)}>
-                          <Pencil className="w-4 h-4 mr-2" /> Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive"
-                          onClick={() => setDeleteOpen(true)}
-                        >
-                          <Trash2 className="w-4 h-4 mr-2" /> Excluir
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {canEdit && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="w-4 h-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => setEditOpen(true)}>
+                            <Pencil className="w-4 h-4 mr-2" /> Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => setDeleteOpen(true)}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" /> Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="flex-1 p-6">
-                {notes.agenda?.length > 0 && (
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                      Pauta
-                    </h4>
-                    <ul className="space-y-2">
-                      {notes.agenda.map((item: any, i: number) => (
-                        <li
-                          key={i}
-                          className="flex items-start gap-3 p-3 bg-white border rounded-md shadow-sm"
-                        >
-                          <span
-                            className={`w-2 h-2 rounded-full mt-1.5 ${item.done ? 'bg-emerald-500' : 'bg-blue-500'}`}
-                          />
-                          <p className="text-sm font-medium text-slate-800">
-                            {typeof item === 'string' ? item : item.text}
-                          </p>
-                        </li>
-                      ))}
-                    </ul>
+              <CardContent className="flex-1 p-6 space-y-4">
+                {DETAIL_FIELDS.map((f) => {
+                  const val = selected[f.key as keyof OneOnOneRecord] as string
+                  if (!val) return null
+                  return (
+                    <div key={f.key}>
+                      <h4
+                        className={`text-sm font-semibold uppercase tracking-wider mb-1 flex items-center gap-2 ${f.color}`}
+                      >
+                        <f.icon className="h-4 w-4" /> {f.label}
+                      </h4>
+                      <p className="text-sm text-slate-700 whitespace-pre-wrap">{val}</p>
+                    </div>
+                  )
+                })}
+                {selected.action_deadline && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 p-3 rounded border border-slate-100">
+                    <Clock className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Prazo para ser feito:</span>{' '}
+                    {new Date(selected.action_deadline).toLocaleDateString('pt-BR')}
                   </div>
                 )}
-                {notes.summary && (
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                      Resumo
-                    </h4>
-                    <p className="text-sm text-slate-700">{notes.summary}</p>
-                  </div>
-                )}
-                {notes.privateNotes && (
-                  <div className="mb-6">
-                    <h4 className="text-sm font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                      Notas Privadas
-                    </h4>
-                    <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded">
-                      {notes.privateNotes}
+                {!selected.objective &&
+                  !selected.reason &&
+                  !selected.positive_points &&
+                  !selected.improvement_points &&
+                  !selected.report && (
+                    <p className="text-sm text-muted-foreground italic">
+                      Nenhuma informação registrada. Clique em Editar para adicionar.
                     </p>
-                  </div>
-                )}
-                {!notes.agenda?.length && !notes.summary && !notes.privateNotes && (
-                  <p className="text-sm text-muted-foreground italic">
-                    Nenhuma nota registrada. Clique em Editar para adicionar.
-                  </p>
-                )}
+                  )}
               </CardContent>
             </Card>
           ) : (
@@ -286,6 +289,7 @@ export default function OneOnOnes() {
           )}
         </div>
       </div>
+      <OneOnOneHistory meetings={meetings} />
       {employee && (
         <AddOneOnOneDialog
           open={addOpen}

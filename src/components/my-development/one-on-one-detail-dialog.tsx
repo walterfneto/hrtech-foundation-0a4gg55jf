@@ -6,7 +6,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, User, CheckSquare, ListChecks, FileText } from 'lucide-react'
+import { Calendar, User, Clock, Target, FileText, TrendingUp, TrendingDown } from 'lucide-react'
 import type { OneOnOneRecord } from '@/services/one-on-ones'
 
 interface Props {
@@ -24,12 +24,6 @@ const statusConfig: Record<string, { label: string; class: string }> = {
 export function OneOnOneDetailDialog({ oneOnOne, open, onOpenChange }: Props) {
   if (!oneOnOne) return null
 
-  const notes = oneOnOne.notes
-    ? typeof oneOnOne.notes === 'string'
-      ? JSON.parse(oneOnOne.notes as string)
-      : oneOnOne.notes
-    : {}
-
   const manager = oneOnOne.expand?.manager
   const managerName = manager?.expand?.user?.name ?? manager?.job_title ?? 'Gestor'
   const status = statusConfig[oneOnOne.status] ?? statusConfig.planned
@@ -42,6 +36,38 @@ export function OneOnOneDetailDialog({ oneOnOne, open, onOpenChange }: Props) {
         minute: '2-digit',
       })
     : 'N/A'
+
+  const deadlineStr = oneOnOne.action_deadline
+    ? new Date(oneOnOne.action_deadline).toLocaleDateString('pt-BR')
+    : null
+
+  const fields = [
+    {
+      icon: Target,
+      label: 'Objetivo / Finalidade',
+      value: oneOnOne.objective,
+      color: 'text-slate-600',
+    },
+    { icon: FileText, label: 'Motivo', value: oneOnOne.reason, color: 'text-slate-600' },
+    {
+      icon: TrendingUp,
+      label: 'O que está bom',
+      value: oneOnOne.positive_points,
+      color: 'text-emerald-600',
+    },
+    {
+      icon: TrendingDown,
+      label: 'O que precisa melhorar',
+      value: oneOnOne.improvement_points,
+      color: 'text-amber-600',
+    },
+    {
+      icon: FileText,
+      label: 'Relatório da Reunião',
+      value: oneOnOne.report,
+      color: 'text-slate-600',
+    },
+  ].filter((f) => f.value)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,55 +87,27 @@ export function OneOnOneDetailDialog({ oneOnOne, open, onOpenChange }: Props) {
           <Badge variant="outline" className={status.class}>
             {status.label}
           </Badge>
-
-          {notes.summary && (
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" /> Resumo
-              </h4>
-              <p className="text-sm text-slate-700 leading-relaxed">{notes.summary}</p>
+          {deadlineStr && (
+            <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-100">
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="font-medium">Prazo para ser feito:</span> {deadlineStr}
             </div>
           )}
-
-          {notes.agenda && Array.isArray(notes.agenda) && notes.agenda.length > 0 && (
-            <div>
+          {fields.map((f) => (
+            <div key={f.label} className="bg-slate-50 rounded-lg p-4 border border-slate-100">
               <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                <ListChecks className="h-4 w-4 text-primary" /> Pauta
+                <f.icon className={`h-4 w-4 ${f.color}`} /> {f.label}
               </h4>
-              <ul className="space-y-1.5">
-                {notes.agenda.map((item: string, i: number) => (
-                  <li key={i} className="text-sm text-slate-700 flex items-start gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">
+                {f.value}
+              </p>
             </div>
-          )}
-
-          {notes.action_items &&
-            Array.isArray(notes.action_items) &&
-            notes.action_items.length > 0 && (
-              <div>
-                <h4 className="text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                  <CheckSquare className="h-4 w-4 text-emerald-600" /> Itens de Ação
-                </h4>
-                <ul className="space-y-1.5">
-                  {notes.action_items.map((item: string, i: number) => (
-                    <li key={i} className="text-sm text-slate-700 flex items-start gap-2">
-                      <span className="w-4 h-4 rounded border border-emerald-300 mt-0.5 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-          {!notes.summary && !notes.agenda && !notes.action_items && (
+          ))}
+          {fields.length === 0 && (
             <p className="text-sm text-muted-foreground italic">
               {oneOnOne.status === 'planned'
-                ? 'Esta reunião ainda não possui notas. As notas aparecerão aqui após a conclusão.'
-                : 'Sem notas registradas para esta reunião.'}
+                ? 'Esta reunião ainda não possui conteúdo registrado. As informações aparecerão aqui após serem preenchidas pelo gestor.'
+                : 'Sem informações registradas para esta reunião.'}
             </p>
           )}
         </div>
