@@ -21,16 +21,16 @@ export default function MyDevelopment() {
   }, [employeeId])
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Meu Desenvolvimento</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-xl font-semibold tracking-tight">Meu Desenvolvimento</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Acompanhe sua evolução e plano de desenvolvimento.
         </p>
       </div>
 
       {loading ? (
-        <Skeleton className="h-[400px] w-full rounded-xl" />
+        <Skeleton className="h-[400px] w-full rounded-lg" />
       ) : employeeId ? (
         <PerformanceEvolutionChart
           employeeId={employeeId}
@@ -39,16 +39,16 @@ export default function MyDevelopment() {
         />
       ) : null}
 
-      <Card>
+      <Card className="rounded-lg border bg-card shadow-subtle">
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Target className="h-4 w-4 text-amber-500" />
+          <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+            <Target className="h-4 w-4 text-muted-foreground" />
             Plano de Desenvolvimento (PDI)
           </CardTitle>
           <CardDescription>Suas metas e ações de desenvolvimento em andamento.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
+        <CardContent className="space-y-4 divide-y divide-border">
+          <div className="pt-4 first:pt-0">
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium">Comunicação Assertiva</span>
               <span className="text-muted-foreground">60%</span>
@@ -58,7 +58,7 @@ export default function MyDevelopment() {
               Próxima ação: Concluir leitura do livro até sexta.
             </p>
           </div>
-          <div>
+          <div className="pt-4 first:pt-0">
             <div className="flex justify-between text-sm mb-1">
               <span className="font-medium">Liderança Técnica</span>
               <span className="text-muted-foreground">25%</span>

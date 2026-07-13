@@ -33,34 +33,13 @@ import {
 import { toast } from 'sonner'
 import { extractFieldErrors, type FieldErrors } from '@/lib/pocketbase/errors'
 import { updateFeedbackFollowUp } from '@/services/feedbacks'
+import { IMPROVEMENT_STATUS } from '@/lib/status'
 import type { FeedbackRecord, ImprovementStatus } from '@/lib/types'
 
 interface FeedbackCardProps {
   feedback: FeedbackRecord
   view: 'mural' | 'received' | 'sent'
   currentEmployeeId: string
-}
-
-const STATUS_CONFIG: Record<
-  ImprovementStatus,
-  { label: string; icon: typeof Clock; class: string }
-> = {
-  pending: { label: 'Aguardando', icon: Clock, class: 'bg-slate-100 text-slate-600' },
-  in_progress: {
-    label: 'Em Progresso',
-    icon: Loader2,
-    class: 'bg-blue-50 text-blue-700',
-  },
-  improved: {
-    label: 'Melhorou',
-    icon: CheckCircle2,
-    class: 'bg-green-50 text-green-700',
-  },
-  no_change: {
-    label: 'Sem Mudança',
-    icon: AlertCircle,
-    class: 'bg-orange-50 text-orange-700',
-  },
 }
 
 function getName(emp?: any) {
@@ -74,9 +53,9 @@ function getInitial(emp?: any) {
 function StructuredField({ label, content }: { label: string; content: string }) {
   if (!content?.trim()) return null
   return (
-    <div className="rounded-lg bg-slate-50 p-3 border border-slate-100">
-      <p className="text-xs font-semibold text-slate-500 mb-1">{label}</p>
-      <p className="text-sm text-slate-700 leading-relaxed">{content}</p>
+    <div className="rounded-lg bg-muted/50 p-3 border">
+      <p className="text-xs font-medium text-muted-foreground mb-1">{label}</p>
+      <p className="text-sm text-foreground leading-relaxed">{content}</p>
     </div>
   )
 }
@@ -106,24 +85,31 @@ export function FeedbackCard({ feedback, view, currentEmployeeId }: FeedbackCard
   const header =
     view === 'mural' ? (
       <>
-        <span className="font-semibold text-slate-900">{getName(feedback.expand?.sender)}</span>
+        <span className="font-medium text-foreground">{getName(feedback.expand?.sender)}</span>
         <span className="text-muted-foreground text-sm">enviou para</span>
-        <span className="font-semibold text-primary">{getName(feedback.expand?.receiver)}</span>
+        <span className="font-medium text-primary">{getName(feedback.expand?.receiver)}</span>
       </>
     ) : view === 'received' ? (
       <>
         <span className="text-muted-foreground text-sm">Recebido de</span>
-        <span className="font-semibold text-slate-900">{getName(feedback.expand?.sender)}</span>
+        <span className="font-medium text-foreground">{getName(feedback.expand?.sender)}</span>
       </>
     ) : (
       <>
         <span className="text-muted-foreground text-sm">Enviado para</span>
-        <span className="font-semibold text-primary">{getName(feedback.expand?.receiver)}</span>
+        <span className="font-medium text-primary">{getName(feedback.expand?.receiver)}</span>
       </>
     )
 
-  const statusCfg = STATUS_CONFIG[feedback.improvement_status ?? 'pending']
-  const StatusIcon = statusCfg.icon
+  const statusCfg =
+    IMPROVEMENT_STATUS[feedback.improvement_status ?? 'pending'] ?? IMPROVEMENT_STATUS.pending
+  const statusIcons: Record<string, typeof Clock> = {
+    pending: Clock,
+    in_progress: Loader2,
+    improved: CheckCircle2,
+    no_change: AlertCircle,
+  }
+  const StatusIcon = statusIcons[feedback.improvement_status ?? 'pending'] ?? Clock
   const canFollowUp =
     feedback.sender === currentEmployeeId || feedback.receiver === currentEmployeeId
   const showFollowUp =
@@ -151,7 +137,7 @@ export function FeedbackCard({ feedback, view, currentEmployeeId }: FeedbackCard
 
   return (
     <>
-      <Card className="shadow-sm border-slate-200">
+      <Card className="rounded-lg border bg-card shadow-subtle">
         <CardContent className="p-5 flex items-start gap-4">
           <Avatar className="h-10 w-10 border">
             <AvatarFallback>{getInitial(otherPerson)}</AvatarFallback>
@@ -162,11 +148,7 @@ export function FeedbackCard({ feedback, view, currentEmployeeId }: FeedbackCard
             <div className="mt-1 flex items-center gap-2">
               <Badge
                 variant="secondary"
-                className={`font-normal capitalize ${
-                  feedback.type === 'public_praise'
-                    ? 'bg-indigo-50 text-indigo-700'
-                    : 'bg-amber-50 text-amber-700'
-                }`}
+                className={`font-normal capitalize ${statusCfg.bg} ${statusCfg.text}`}
               >
                 {feedback.type === 'public_praise' ? (
                   <Heart className="h-3 w-3 mr-1" />
@@ -191,19 +173,22 @@ export function FeedbackCard({ feedback, view, currentEmployeeId }: FeedbackCard
             </div>
 
             {showFollowUp && (
-              <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50/50 p-3">
+              <div className="mt-3 rounded-lg border bg-accent/50 p-3">
                 <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary">
                     <TrendingUp className="h-3.5 w-3.5" />
                     Retorno / Acompanhamento
                   </span>
-                  <Badge variant="secondary" className={`font-normal text-xs ${statusCfg.class}`}>
+                  <Badge
+                    variant="secondary"
+                    className={`font-normal text-xs ${statusCfg.bg} ${statusCfg.text}`}
+                  >
                     <StatusIcon className="h-3 w-3 mr-1" />
                     {statusCfg.label}
                   </Badge>
                 </div>
                 {feedback.follow_up_notes?.trim() && (
-                  <p className="text-sm text-slate-700 leading-relaxed">
+                  <p className="text-sm text-foreground leading-relaxed">
                     {feedback.follow_up_notes}
                   </p>
                 )}
@@ -230,13 +215,15 @@ export function FeedbackCard({ feedback, view, currentEmployeeId }: FeedbackCard
       </Card>
 
       <Dialog open={followUpOpen} onOpenChange={setFollowUpOpen}>
-        <DialogContent className="sm:max-w-[500px]">
+        <DialogContent className="sm:max-w-[500px] shadow-elevation">
           <DialogHeader>
-            <DialogTitle>Retorno / Acompanhamento</DialogTitle>
+            <DialogTitle className="text-xl font-semibold tracking-tight">
+              Retorno / Acompanhamento
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid gap-2">
-              <Label className="text-sm font-semibold">Status de Melhoria</Label>
+              <Label className="text-sm font-medium">Status de Melhoria</Label>
               <Select
                 value={improvementStatus}
                 onValueChange={(v) => setImprovementStatus(v as ImprovementStatus)}
@@ -253,15 +240,15 @@ export function FeedbackCard({ feedback, view, currentEmployeeId }: FeedbackCard
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label className="text-sm font-semibold">Notas de Retorno</Label>
+              <Label className="text-sm font-medium">Notas de Retorno</Label>
               <Textarea
-                className="min-h-[100px] bg-slate-50"
+                className="min-h-[100px] bg-muted/50"
                 placeholder="Documente se o comportamento ou desempenho melhorou com o tempo. Ex: 'Após a conversa, os relatórios passaram a ser revisados 24h antes, sem mais atrasos.'"
                 value={followUpNotes}
                 onChange={(e) => setFollowUpNotes(e.target.value)}
               />
               {fieldErrors.follow_up_notes && (
-                <p className="text-sm text-red-500">{fieldErrors.follow_up_notes}</p>
+                <p className="text-sm text-destructive">{fieldErrors.follow_up_notes}</p>
               )}
             </div>
           </div>

@@ -27,11 +27,11 @@ export function EmployeeDashboard({ data }: { data: DashboardData }) {
     .slice(0, 3)
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6">
       {pendingTasks.length > 0 && (
-        <Card className="border-l-4 border-l-red-500 shadow-sm">
+        <Card className="rounded-lg border bg-card shadow-subtle border-l-2 border-l-destructive">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Central de Pendências Urgentes
             </CardTitle>
           </CardHeader>
@@ -42,35 +42,37 @@ export function EmployeeDashboard({ data }: { data: DashboardData }) {
                 className="flex justify-between items-center bg-muted/50 p-3 rounded border"
               >
                 <span className="text-sm font-medium">{t.title}</span>
-                <Badge variant="destructive" className="bg-red-500">
-                  {t.priority}
-                </Badge>
+                <Badge variant="destructive">{t.priority}</Badge>
               </div>
             ))}
-            <Button asChild variant="link" className="px-0 text-red-600 dark:text-red-400">
+            <Button asChild variant="link" className="px-0 text-destructive">
               <Link to="/tarefas">Ver todas as tarefas</Link>
             </Button>
           </CardContent>
         </Card>
       )}
 
-      <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-xl p-6 text-white shadow-elevation">
-        <h2 className="text-xl font-bold">Olá, {user?.name ?? 'Colaborador'}!</h2>
-        <p className="mt-2 opacity-90 text-sm max-w-xl">
-          Você tem {pendingTasks.length} tarefa(s) pendente(s) e {myGoals.length} meta(s) em
-          desenvolvimento.
-        </p>
-      </div>
+      <Card className="rounded-lg border bg-card shadow-subtle">
+        <CardContent className="p-6">
+          <h2 className="text-xl font-semibold tracking-tight">
+            Olá, {user?.name ?? 'Colaborador'}!
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground max-w-xl">
+            Você tem {pendingTasks.length} tarefa(s) pendente(s) e {myGoals.length} meta(s) em
+            desenvolvimento.
+          </p>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <ClipboardList className="h-4 w-4 text-amber-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <ClipboardList className="h-4 w-4 text-muted-foreground" />
               Avaliações Ativas
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 divide-y divide-border">
             {activeCycles.length === 0 ? (
               <EmptyState message="Nenhuma avaliação ativa." />
             ) : (
@@ -82,14 +84,14 @@ export function EmployeeDashboard({ data }: { data: DashboardData }) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-amber-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-muted-foreground" />
               Meu Desenvolvimento (PDI)
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 divide-y divide-border">
             {myGoals.length === 0 ? (
               <EmptyState message="Nenhuma meta de desenvolvimento encontrada." />
             ) : (
@@ -100,14 +102,14 @@ export function EmployeeDashboard({ data }: { data: DashboardData }) {
       </div>
 
       {myFeedbacks.length > 0 && (
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2">
-              <Target className="h-4 w-4 text-teal-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+              <Target className="h-4 w-4 text-muted-foreground" />
               Feedbacks Recebidos
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 divide-y divide-border">
             {myFeedbacks.map((f) => (
               <FeedbackItem key={f.id} feedback={f} />
             ))}

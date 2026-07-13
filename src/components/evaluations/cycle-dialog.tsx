@@ -70,9 +70,11 @@ export function CycleDialog({ open, onOpenChange, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg shadow-elevation">
         <DialogHeader>
-          <DialogTitle>Novo Ciclo de Avaliação</DialogTitle>
+          <DialogTitle className="text-xl font-semibold tracking-tight">
+            Novo Ciclo de Avaliação
+          </DialogTitle>
           <DialogDescription>
             Configure um novo ciclo com template, datas e participantes.
           </DialogDescription>
@@ -129,7 +131,7 @@ export function CycleDialog({ open, onOpenChange, onCreated }: Props) {
             </Select>
           </div>
           {target === 'times' && (
-            <div className="space-y-2 border rounded-lg p-3 bg-slate-50/50">
+            <div className="space-y-2 border rounded-lg p-3 bg-muted/50">
               {MOCK_TEAMS.map((t) => (
                 <div key={t.id} className="flex items-center gap-2">
                   <Checkbox

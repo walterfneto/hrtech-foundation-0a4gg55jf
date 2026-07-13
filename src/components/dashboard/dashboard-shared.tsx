@@ -2,6 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Badge } from '@/components/ui/badge'
 import { Calendar, MessageSquare, ThumbsUp, Lock } from 'lucide-react'
 import type { EvaluationCycleRecord, FeedbackRecord, PdiGoalRecord } from '@/lib/types'
+import { TASK_STATUS } from '@/lib/status'
 
 export function LoadingState() {
   return (
@@ -29,13 +30,17 @@ export function EmptyState({ message }: { message: string }) {
 
 const feedbackTypeConfig: Record<string, { label: string; icon: typeof ThumbsUp; color: string }> =
   {
-    public_praise: { label: 'Reconhecimento Público', icon: ThumbsUp, color: 'text-teal-500' },
+    public_praise: {
+      label: 'Reconhecimento Público',
+      icon: ThumbsUp,
+      color: 'text-muted-foreground',
+    },
     confidential_improvement: {
       label: 'Melhoria Confidencial',
       icon: Lock,
-      color: 'text-amber-500',
+      color: 'text-warning',
     },
-    '1_on_1': { label: 'Feedback 1:1', icon: MessageSquare, color: 'text-blue-500' },
+    '1_on_1': { label: 'Feedback 1:1', icon: MessageSquare, color: 'text-muted-foreground' },
   }
 
 export function FeedbackItem({ feedback }: { feedback: FeedbackRecord }) {
@@ -88,31 +93,20 @@ export function CycleItem({ cycle }: { cycle: EvaluationCycleRecord }) {
 
 export function GoalProgressItem({ goal }: { goal: PdiGoalRecord }) {
   const pct = goal.progress ?? 0
-  const statusLabel =
-    goal.status === 'completed'
-      ? 'Concluído'
-      : goal.status === 'in_progress'
-        ? 'Em Progresso'
-        : 'A Fazer'
-  const statusColor =
-    goal.status === 'completed'
-      ? 'text-teal-600 bg-teal-100 dark:text-teal-300 dark:bg-teal-950'
-      : goal.status === 'in_progress'
-        ? 'text-amber-600 bg-amber-100 dark:text-amber-300 dark:bg-amber-950'
-        : 'text-muted-foreground bg-muted'
+  const statusCfg = TASK_STATUS[goal.status] ?? TASK_STATUS.todo
   return (
     <div className="p-3 bg-muted/40 border rounded-lg">
       <div className="flex justify-between items-start mb-2 gap-2">
         <p className="text-sm font-medium leading-tight">{goal.title}</p>
         <span
-          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded shrink-0 ${statusColor}`}
+          className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded shrink-0 ${statusCfg.bg} ${statusCfg.text}`}
         >
-          {statusLabel}
+          {statusCfg.label}
         </span>
       </div>
       <div className="w-full bg-muted rounded-full h-1.5">
         <div
-          className="bg-primary rounded-full h-1.5 transition-all"
+          className="bg-primary rounded-full h-1.5 transition-colors"
           style={{ width: `${pct}%` }}
         />
       </div>

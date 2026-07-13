@@ -4,134 +4,162 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Slider } from '@/components/ui/slider'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { CheckCircle2, Save } from 'lucide-react'
-import { getCycle, getTemplate, getMember } from '@/lib/eval-data'
-import type { AvaliacaoResposta } from '@/lib/types'
+import { CheckCircle2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import type { EvaluationTemplate } from '@/lib/types'
+import { createEvaluation } from '@/services/evaluations'
+import { useAuth } from '@/hooks/use-auth'
+import { getCurrentCompanyId } from '@/services/helpers'
+import { getErrorMessage } from '@/lib/pocketbase/errors'
 
 interface Props {
-  avaliacao: AvaliacaoResposta
-  onClose: () => void
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  template: EvaluationTemplate
+  cycleId: string
+  cycleName: string
+  targetUserName: string
+  targetEmployeeId: string
 }
 
-export function EvaluationFormDialog({ avaliacao, onClose }: Props) {
-  const [answers, setAnswers] = useState<Record<string, string | number>>(avaliacao.respostas)
-  const cycle = getCycle(avaliacao.ciclo_id)
-  const template = cycle ? getTemplate(cycle.modelo_id) : null
-  const avaliado = getMember(avaliacao.avaliado_id)
+export function EvaluationFormDialog({
+  open,
+  onOpenChange,
+  template,
+  cycleId,
+  cycleName,
+  targetUserName,
+  targetEmployeeId,
+}: Props) {
+  const { employee } = useAuth()
+  const [answers, setAnswers] = useState<Record<string, string | number>>({})
+  const [submitting, setSubmitting] = useState(false)
 
-  const setAnswer = (qid: string, val: string | number) =>
-    setAnswers((prev) => ({ ...prev, [qid]: val }))
+  const setAns = (qid: string, val: string | number) => setAnswers((a) => ({ ...a, [qid]: val }))
 
-  const handleSubmit = () => {
-    toast.success('Avaliação enviada com sucesso!', {
-      description: `Respostas registradas para ${avaliado?.name}.`,
-    })
-    onClose()
-  }
-
-  const handleDraft = () => {
-    toast.info('Rascunho salvo!', { description: 'Você pode continuar mais tarde.' })
-    onClose()
+  const handleSubmit = async () => {
+    const unanswered = template.questions.filter((q) => q.required && !(q.id in answers))
+    if (unanswered.length > 0) {
+      toast.error(`${unanswered.length} perguntas obrigatórias pendentes`)
+      return
+    }
+    setSubmitting(true)
+    try {
+      const ratingQs = template.questions.filter((q) => q.type === 'rating')
+      const scores = ratingQs.map((q) => Number(answers[q.id] || 0)).filter((n) => n > 0)
+      const avgScore = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0
+      await createEvaluation({
+        cycle: cycleId,
+        employee: targetEmployeeId,
+        evaluator: employee?.id ?? '',
+        responses: answers,
+        score: avgScore,
+        status: 'completed',
+        company: getCurrentCompanyId(),
+      })
+      toast.success('Avaliação enviada com sucesso!')
+      setAnswers({})
+      onOpenChange(false)
+    } catch (err) {
+      toast.error(getErrorMessage(err))
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
-    <Dialog open onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto shadow-elevation">
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <Avatar className="h-12 w-12">
-              <AvatarImage src={avaliado?.avatar} />
-              <AvatarFallback>{avaliado?.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div>
-              <DialogTitle>Avaliação: {avaliado?.name}</DialogTitle>
-              <DialogDescription>
-                {cycle?.nome} •{' '}
-                {avaliacao.tipo === 'auto' ? 'Autoavaliação' : 'Avaliação de Gestor'}
-              </DialogDescription>
-            </div>
-          </div>
+          <DialogTitle className="text-xl font-semibold tracking-tight">
+            {template.nome}
+          </DialogTitle>
+          <DialogDescription>
+            {cycleName} • Avaliando:{' '}
+            <span className="font-medium text-foreground">{targetUserName}</span>
+          </DialogDescription>
         </DialogHeader>
-
         <div className="space-y-6 py-2">
-          {template?.questoes.map((q, i) => (
-            <div key={q.id} className="space-y-3">
-              <div className="flex items-center justify-between">
-                <Label className="font-semibold text-sm">
-                  {i + 1}. {q.texto}
-                </Label>
-                {q.tipo === 'escala' && answers[q.id] !== undefined && (
-                  <span className="text-sm font-bold text-primary">
-                    {answers[q.id]}/{q.escala_max}
-                  </span>
-                )}
+          {template.questions.map((q, i) => (
+            <div key={q.id} className="space-y-3 border-b pb-4 last:border-0">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <Label className="text-sm font-semibold">
+                    {i + 1}. {q.label}
+                    {q.required && <span className="text-destructive ml-1">*</span>}
+                  </Label>
+                  {q.description && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{q.description}</p>
+                  )}
+                </div>
               </div>
-
-              {q.tipo === 'escala' && (
-                <>
-                  <Slider
-                    value={[Number(answers[q.id] || 0)]}
-                    onValueChange={([v]) => setAnswer(q.id, v)}
-                    max={q.escala_max || 5}
-                    step={1}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>1 - Abaixo do esperado</span>
-                    <span>{q.escala_max || 5} - Supera expectativas</span>
+              {q.type === 'rating' && (
+                <div className="px-2">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs text-muted-foreground">1</span>
+                    <span className="text-sm font-semibold text-primary">
+                      {answers[q.id] ?? '-'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{q.scaleMax ?? 5}</span>
                   </div>
-                </>
+                  <Slider
+                    min={1}
+                    max={q.scaleMax ?? 5}
+                    step={1}
+                    value={[Number(answers[q.id] ?? 1)]}
+                    onValueChange={([v]) => setAns(q.id, v)}
+                    className="w-full"
+                  />
+                </div>
               )}
-
-              {q.tipo === 'multipla_escolha' && (
+              {q.type === 'multiple_choice' && (
                 <RadioGroup
-                  value={String(answers[q.id] || '')}
-                  onValueChange={(v) => setAnswer(q.id, v)}
+                  value={String(answers[q.id] ?? '')}
+                  onValueChange={(v) => setAns(q.id, v)}
                 >
-                  {q.opcoes?.map((op) => (
-                    <div
-                      key={op}
-                      className="flex items-center gap-2 p-2 rounded hover:bg-slate-50 cursor-pointer"
-                    >
-                      <RadioGroupItem value={op} id={`${q.id}-${op}`} />
+                  {q.options?.map((opt) => (
+                    <div key={opt} className="flex items-center gap-2">
+                      <RadioGroupItem value={opt} id={`${q.id}-${opt}`} />
                       <Label
-                        htmlFor={`${q.id}-${op}`}
-                        className="text-sm font-normal cursor-pointer"
+                        htmlFor={`${q.id}-${opt}`}
+                        className="text-sm cursor-pointer font-normal"
                       >
-                        {op}
+                        {opt}
                       </Label>
                     </div>
                   ))}
                 </RadioGroup>
               )}
-
-              {q.tipo === 'texto' && (
+              {q.type === 'text' && (
                 <Textarea
-                  value={String(answers[q.id] || '')}
-                  onChange={(e) => setAnswer(q.id, e.target.value)}
+                  value={String(answers[q.id] ?? '')}
+                  onChange={(e) => setAns(q.id, e.target.value)}
                   placeholder="Digite sua resposta..."
-                  className="min-h-[80px] resize-none"
+                  className="min-h-[80px]"
                 />
               )}
             </div>
           ))}
         </div>
-
         <DialogFooter>
-          <Button variant="outline" onClick={handleDraft}>
-            <Save className="h-4 w-4 mr-2" /> Salvar Rascunho
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Salvar Rascunho
           </Button>
-          <Button onClick={handleSubmit}>
-            <CheckCircle2 className="h-4 w-4 mr-2" /> Enviar Avaliação
+          <Button onClick={handleSubmit} disabled={submitting}>
+            {submitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <CheckCircle2 className="mr-2 h-4 w-4" />
+            )}
+            Finalizar Avaliação
           </Button>
         </DialogFooter>
       </DialogContent>

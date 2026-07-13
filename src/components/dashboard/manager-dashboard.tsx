@@ -28,47 +28,61 @@ export function ManagerDashboard({ data }: { data: DashboardData }) {
   const recentFeedbacks = data.feedbacks.slice(0, 4)
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-l-4 border-l-amber-400">
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pessoas na Equipe</CardTitle>
-            <Calendar className="h-4 w-4 text-amber-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Pessoas na Equipe
+            </CardTitle>
+            <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamMembers.length}</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight">
+              {teamMembers.length}
+            </div>
             <p className="text-xs text-muted-foreground">Liderados diretos ativos</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-orange-400">
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Metas em Risco</CardTitle>
-            <AlertTriangle className="h-4 w-4 text-orange-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Metas em Risco
+            </CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-orange-500">{goalsAtRisk.length}</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight text-destructive">
+              {goalsAtRisk.length}
+            </div>
             <p className="text-xs text-muted-foreground">Requerem atenção</p>
           </CardContent>
         </Card>
-        <Card className="border-l-4 border-l-teal-400">
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ciclos Ativos</CardTitle>
-            <FileEdit className="h-4 w-4 text-teal-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Ciclos Ativos
+            </CardTitle>
+            <FileEdit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeCycles.length}</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight">
+              {activeCycles.length}
+            </div>
             <p className="text-xs text-muted-foreground">Em andamento</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base">Status da Equipe Direta</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Status da Equipe Direta
+            </CardTitle>
             <CardDescription>Resumo dos seus liderados.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 divide-y divide-border">
             {teamMembers.length === 0 ? (
               <EmptyState message="Nenhum liderado encontrado." />
             ) : (
@@ -106,11 +120,13 @@ export function ManagerDashboard({ data }: { data: DashboardData }) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base">Ciclos Ativos</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Ciclos Ativos
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 divide-y divide-border">
             {activeCycles.length === 0 ? (
               <EmptyState message="Nenhum ciclo ativo." />
             ) : (
@@ -121,11 +137,13 @@ export function ManagerDashboard({ data }: { data: DashboardData }) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base">Metas da Equipe</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Metas da Equipe
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 divide-y divide-border">
             {teamGoals.length === 0 ? (
               <EmptyState message="Nenhuma meta atribuída à equipe." />
             ) : (
@@ -134,11 +152,13 @@ export function ManagerDashboard({ data }: { data: DashboardData }) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base">Feedbacks Recentes</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Feedbacks Recentes
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 divide-y divide-border">
             {recentFeedbacks.length === 0 ? (
               <EmptyState message="Nenhum feedback registrado." />
             ) : (

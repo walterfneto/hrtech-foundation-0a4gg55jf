@@ -68,9 +68,11 @@ export function TemplateDialog({ open, onOpenChange, onCreated }: Props) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto shadow-elevation">
         <DialogHeader>
-          <DialogTitle>Novo Template de Avaliação</DialogTitle>
+          <DialogTitle className="text-xl font-semibold tracking-tight">
+            Novo Template de Avaliação
+          </DialogTitle>
           <DialogDescription>Crie um modelo com perguntas customizadas.</DialogDescription>
         </DialogHeader>
 
@@ -103,10 +105,10 @@ export function TemplateDialog({ open, onOpenChange, onCreated }: Props) {
               </Button>
             </div>
             {questions.map((q, i) => (
-              <div key={q.id} className="border rounded-lg p-3 space-y-2 bg-slate-50/50">
+              <div key={q.id} className="border rounded-lg p-3 space-y-2 bg-muted/50">
                 <div className="flex items-center gap-2">
                   <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <span className="text-xs font-semibold text-muted-foreground">
+                  <span className="text-xs font-medium text-muted-foreground">
                     Pergunta {i + 1}
                   </span>
                   <Button

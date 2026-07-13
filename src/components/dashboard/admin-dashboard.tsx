@@ -21,58 +21,74 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
   const overallCompletion = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Colaboradores Ativos</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Colaboradores Ativos
+            </CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeEmployees.length}</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight">
+              {activeEmployees.length}
+            </div>
             <p className="text-xs text-muted-foreground">{data.employees.length} no total</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ciclos Ativos</CardTitle>
-            <FileCheck className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Ciclos Ativos
+            </CardTitle>
+            <FileCheck className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{activeCycles.length}</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight text-primary">
+              {activeCycles.length}
+            </div>
             <p className="text-xs text-muted-foreground">{data.cycles.length} ciclos no total</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Metas e Tarefas</CardTitle>
-            <Target className="h-4 w-4 text-teal-500" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Metas e Tarefas
+            </CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-teal-500">{overallCompletion}%</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight">
+              {overallCompletion}%
+            </div>
             <p className="text-xs text-muted-foreground">
               {completedItems} de {totalItems} concluídas
             </p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Feedbacks</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Feedbacks</CardTitle>
             <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{data.feedbacks.length}</div>
+            <div className="text-2xl font-semibold tabular-nums tracking-tight">
+              {data.feedbacks.length}
+            </div>
             <p className="text-xs text-muted-foreground">Total registrados</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base">Ciclos de Avaliação Ativos</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Ciclos de Avaliação Ativos
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 divide-y divide-border">
             {activeCycles.length === 0 ? (
               <EmptyState message="Nenhum ciclo ativo encontrado." />
             ) : (
@@ -81,11 +97,13 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-lg border bg-card shadow-subtle">
           <CardHeader>
-            <CardTitle className="text-base">Feedbacks Recentes</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Feedbacks Recentes
+            </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 divide-y divide-border">
             {data.feedbacks.length === 0 ? (
               <EmptyState message="Nenhum feedback registrado ainda." />
             ) : (
@@ -95,9 +113,9 @@ export function AdminDashboard({ data }: { data: DashboardData }) {
         </Card>
       </div>
 
-      <Card>
+      <Card className="rounded-lg border bg-card shadow-subtle">
         <CardHeader>
-          <CardTitle className="text-base">Metas e OKRs</CardTitle>
+          <CardTitle className="text-sm font-medium text-muted-foreground">Metas e OKRs</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2">
           {data.pdiGoals.length === 0 ? (

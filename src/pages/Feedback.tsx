@@ -56,16 +56,16 @@ export default function Feedback() {
   const emptyMsg = (msg: string) => <p className="text-center text-muted-foreground py-8">{msg}</p>
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto animate-fade-in-up pb-8">
+    <div className="space-y-6 max-w-4xl mx-auto pb-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">Feedback Contínuo</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-xl font-semibold tracking-tight">Feedback Contínuo</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Reconheça conquistas ou envie feedbacks de desenvolvimento.
         </p>
       </div>
 
       <Tabs defaultValue="recebidos" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 bg-slate-100/50 p-1 border">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="recebidos">Recebidos</TabsTrigger>
           <TabsTrigger value="enviados">Enviados</TabsTrigger>
           <TabsTrigger value="mural">Mural</TabsTrigger>

@@ -1,7 +1,7 @@
 /* Global styles - Theme, font, utilities, animations and global components */
 
 /* CHANGE THE FONT BELOW TO WHATEVER YOU WANT */
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400..600&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -54,6 +54,7 @@
     --chart-3: 220 55% 55%;
     --chart-4: 35 75% 53%;
     --chart-5: 280 45% 55%;
+    --warning: 38 65% 48%;
   }
 
   .dark {
@@ -98,6 +99,7 @@
     --chart-3: 220 50% 60%;
     --chart-4: 35 70% 55%;
     --chart-5: 280 40% 58%;
+    --warning: 38 65% 55%;
   }
 
   /* NEVER REMOVE THIS */
@@ -108,18 +110,6 @@
 }
 
 @layer components {
-  .soft-primary-surface {
-    background-color: hsl(var(--primary) / 0.06);
-    border: 1px solid hsl(var(--primary) / 0.12);
-  }
-  .soft-primary-surface-hover {
-    background-color: hsl(var(--primary) / 0.06);
-    border: 1px solid hsl(var(--primary) / 0.12);
-    transition: background-color 200ms ease;
-  }
-  .soft-primary-surface-hover:hover {
-    background-color: hsl(var(--primary) / 0.1);
-  }
 }
 
 @layer utilities {

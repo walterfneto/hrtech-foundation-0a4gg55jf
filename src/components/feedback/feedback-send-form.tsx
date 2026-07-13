@@ -16,15 +16,15 @@ const FEEDBACK_TYPES = [
     value: 'public_praise',
     label: 'Público (Elogio)',
     icon: Heart,
-    activeClass: 'bg-primary text-white border-primary',
-    idleClass: 'hover:bg-slate-100',
+    activeClass: 'bg-primary text-primary-foreground border-primary',
+    idleClass: 'hover:bg-muted',
   },
   {
     value: 'confidential_improvement',
     label: 'Privado (Construtivo)',
     icon: Lock,
-    activeClass: 'bg-amber-500 text-white border-amber-500',
-    idleClass: 'hover:bg-slate-100',
+    activeClass: 'bg-warning text-primary-foreground border-warning',
+    idleClass: 'hover:bg-muted',
   },
 ] as const
 
@@ -81,29 +81,31 @@ export function FeedbackSendForm({
   }
 
   return (
-    <Card className="shadow-sm">
+    <Card className="rounded-lg border bg-card shadow-subtle">
       <CardContent className="p-6 space-y-5">
-        <div className="flex items-start gap-2 rounded-lg bg-blue-50 border border-blue-100 p-3">
-          <Info className="h-4 w-4 text-blue-600 mt-0.5 shrink-0" />
-          <p className="text-xs text-blue-700 leading-relaxed">
+        <div className="flex items-start gap-2 rounded-lg bg-accent border p-3">
+          <Info className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+          <p className="text-xs text-muted-foreground leading-relaxed">
             O feedback deve ser <strong>objetivo e baseado em fatos</strong>, focando em
             comportamentos e resultados profissionais — não em opiniões pessoais ou sentimentos.
           </p>
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-sm font-semibold">Para quem? *</Label>
+          <Label className="text-sm font-medium">Para quem? *</Label>
           <EmployeeCombobox
             employees={employees.filter((e) => e.status === 'active' && e.id !== currentEmployeeId)}
             value={form.receiver}
             onChange={(id) => setForm({ ...form, receiver: id })}
             placeholder="Selecione um colaborador"
           />
-          {fieldErrors.receiver && <p className="text-sm text-red-500">{fieldErrors.receiver}</p>}
+          {fieldErrors.receiver && (
+            <p className="text-sm text-destructive">{fieldErrors.receiver}</p>
+          )}
         </div>
 
         <div className="grid gap-2">
-          <Label className="text-sm font-semibold">Tipo de Feedback *</Label>
+          <Label className="text-sm font-medium">Tipo de Feedback *</Label>
           <div className="flex gap-2 flex-wrap">
             {FEEDBACK_TYPES.map((ft) => {
               const Icon = ft.icon
@@ -113,7 +115,7 @@ export function FeedbackSendForm({
                   key={ft.value}
                   type="button"
                   onClick={() => setForm({ ...form, type: ft.value })}
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-all active:scale-95 ${isActive ? ft.activeClass : `border-slate-200 bg-white text-slate-600 ${ft.idleClass}`}`}
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-4 py-2 text-sm font-medium transition-colors active:scale-95 ${isActive ? ft.activeClass : `border-border bg-card text-muted-foreground ${ft.idleClass}`}`}
                 >
                   <Icon className="h-4 w-4" />
                   {ft.label}
@@ -125,7 +127,7 @@ export function FeedbackSendForm({
 
         <div className="grid gap-2">
           <div className="flex items-center gap-1.5">
-            <Label className="text-sm font-semibold">Situação / Contexto *</Label>
+            <Label className="text-sm font-medium">Situação / Contexto *</Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
@@ -137,17 +139,17 @@ export function FeedbackSendForm({
             </Tooltip>
           </div>
           <Textarea
-            className="min-h-[80px] bg-slate-50"
+            className="min-h-[80px] bg-muted/50"
             placeholder="Ex: Na apresentação de quinta-feira, o relatório mensal foi entregue sem os dados de receita..."
             value={form.context}
             onChange={(e) => setForm({ ...form, context: e.target.value })}
           />
-          {fieldErrors.context && <p className="text-sm text-red-500">{fieldErrors.context}</p>}
+          {fieldErrors.context && <p className="text-sm text-destructive">{fieldErrors.context}</p>}
         </div>
 
         <div className="grid gap-2">
           <div className="flex items-center gap-1.5">
-            <Label className="text-sm font-semibold">Impacto Observado *</Label>
+            <Label className="text-sm font-medium">Impacto Observado *</Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
@@ -159,17 +161,17 @@ export function FeedbackSendForm({
             </Tooltip>
           </div>
           <Textarea
-            className="min-h-[80px] bg-slate-50"
+            className="min-h-[80px] bg-muted/50"
             placeholder="Ex: Sem os dados de receita, a diretoria não conseguiu aprovar o orçamento do próximo trimestre, atrasando o planejamento..."
             value={form.impact}
             onChange={(e) => setForm({ ...form, impact: e.target.value })}
           />
-          {fieldErrors.impact && <p className="text-sm text-red-500">{fieldErrors.impact}</p>}
+          {fieldErrors.impact && <p className="text-sm text-destructive">{fieldErrors.impact}</p>}
         </div>
 
         <div className="grid gap-2">
           <div className="flex items-center gap-1.5">
-            <Label className="text-sm font-semibold">Plano de Ação / Sugestão de Melhoria *</Label>
+            <Label className="text-sm font-medium">Plano de Ação / Sugestão de Melhoria *</Label>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Info className="h-3.5 w-3.5 text-muted-foreground cursor-help" />
@@ -181,18 +183,18 @@ export function FeedbackSendForm({
             </Tooltip>
           </div>
           <Textarea
-            className="min-h-[80px] bg-slate-50"
+            className="min-h-[80px] bg-muted/50"
             placeholder="Ex: Sugiro criar um checklist de revisão antes da entrega e incluir o time financeiro na conferência dos dados..."
             value={form.action_plan}
             onChange={(e) => setForm({ ...form, action_plan: e.target.value })}
           />
           {fieldErrors.action_plan && (
-            <p className="text-sm text-red-500">{fieldErrors.action_plan}</p>
+            <p className="text-sm text-destructive">{fieldErrors.action_plan}</p>
           )}
         </div>
 
         <Button
-          className="w-full sm:w-auto active:scale-95 transition-all"
+          className="w-full sm:w-auto transition-colors"
           onClick={handleSubmit}
           disabled={submitting || !isValid}
         >

@@ -32,24 +32,24 @@ import { EditOneOnOneDialog } from '@/components/one-on-ones/edit-one-on-one-dia
 import { OneOnOneHistory } from '@/components/one-on-ones/one-on-one-history'
 import { DeleteDialog } from '@/components/shared/delete-dialog'
 import { exportToPdf } from '@/lib/pdf-utils'
-
-const STATUS_BADGE: Record<string, { label: string; class: string }> = {
-  planned: { label: 'Agendada', class: 'bg-blue-50 text-blue-700' },
-  completed: { label: 'Concluída', class: 'bg-emerald-50 text-emerald-700' },
-  cancelled: { label: 'Cancelada', class: 'bg-rose-50 text-rose-700' },
-}
+import { ONE_ON_ONE_STATUS } from '@/lib/status'
 
 const DETAIL_FIELDS = [
-  { key: 'objective', label: 'Objetivo / Finalidade', icon: Target, color: 'text-slate-500' },
-  { key: 'reason', label: 'Motivo', icon: FileText, color: 'text-slate-500' },
-  { key: 'positive_points', label: 'O que está bom', icon: TrendingUp, color: 'text-emerald-600' },
+  {
+    key: 'objective',
+    label: 'Objetivo / Finalidade',
+    icon: Target,
+    color: 'text-muted-foreground',
+  },
+  { key: 'reason', label: 'Motivo', icon: FileText, color: 'text-muted-foreground' },
+  { key: 'positive_points', label: 'O que está bom', icon: TrendingUp, color: 'text-primary' },
   {
     key: 'improvement_points',
     label: 'O que precisa melhorar',
     icon: TrendingDown,
-    color: 'text-amber-600',
+    color: 'text-warning',
   },
-  { key: 'report', label: 'Relatório da Reunião', icon: FileText, color: 'text-slate-500' },
+  { key: 'report', label: 'Relatório da Reunião', icon: FileText, color: 'text-muted-foreground' },
 ] as const
 
 export default function OneOnOnes() {
@@ -102,7 +102,7 @@ export default function OneOnOnes() {
         items: [
           { label: 'Data', value: dateStr },
           { label: 'Participante', value: otherName },
-          { label: 'Status', value: STATUS_BADGE[selected.status]?.label ?? selected.status },
+          { label: 'Status', value: ONE_ON_ONE_STATUS[selected.status]?.label ?? selected.status },
         ],
       },
     ]
@@ -143,22 +143,21 @@ export default function OneOnOnes() {
     )
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">Reuniões 1:1</h1>
-          <p className="text-slate-500 mt-1">Alinhamento estruturado, relatórios e histórico.</p>
+          <h1 className="text-xl font-semibold tracking-tight">Reuniões 1:1</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Alinhamento estruturado, relatórios e histórico.
+          </p>
         </div>
-        <Button
-          className="shadow-sm active:scale-95 transition-all"
-          onClick={() => setAddOpen(true)}
-        >
+        <Button className="transition-colors" onClick={() => setAddOpen(true)}>
           <Plus className="w-4 h-4 mr-2" /> Agendar 1:1
         </Button>
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         <div className="md:col-span-1 space-y-3">
-          <h3 className="text-lg font-semibold text-slate-800">Reuniões</h3>
+          <h3 className="text-sm font-medium text-muted-foreground">Reuniões</h3>
           {meetings.length === 0 ? (
             <p className="text-sm text-muted-foreground">Nenhuma reunião agendada.</p>
           ) : (
@@ -166,7 +165,7 @@ export default function OneOnOnes() {
               const isMgr = m.manager === employee?.id
               const other = isMgr ? m.expand?.employee : m.expand?.manager
               const oName = other?.expand?.user?.name ?? other?.job_title ?? 'Colaborador'
-              const st = STATUS_BADGE[m.status] ?? STATUS_BADGE.planned
+              const stCfg = ONE_ON_ONE_STATUS[m.status] ?? ONE_ON_ONE_STATUS.planned
               const dateStr = m.scheduled_at
                 ? new Date(m.scheduled_at).toLocaleDateString('pt-BR', {
                     day: '2-digit',
@@ -178,21 +177,21 @@ export default function OneOnOnes() {
               return (
                 <Card
                   key={m.id}
-                  className={`shadow-sm cursor-pointer transition-colors ${selectedId === m.id ? 'border-blue-300 bg-blue-50/50 ring-1 ring-blue-500' : 'hover:bg-slate-50'}`}
+                  className={`rounded-lg border bg-card shadow-subtle cursor-pointer transition-colors ${selectedId === m.id ? 'ring-1 ring-primary' : 'hover:bg-muted/50'}`}
                   onClick={() => setSelectedId(m.id)}
                 >
                   <CardContent className="p-4">
                     <div className="flex justify-between items-start mb-2">
-                      <Badge className={st.class}>{dateStr}</Badge>
-                      {m.status === 'planned' && <Video className="w-4 h-4 text-blue-500" />}
+                      <Badge className={`${stCfg.bg} ${stCfg.text}`}>{dateStr}</Badge>
+                      {m.status === 'planned' && <Video className="w-4 h-4 text-primary" />}
                     </div>
                     <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10 border border-slate-200">
+                      <Avatar className="h-10 w-10 border">
                         <AvatarFallback>{oName.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold text-sm text-slate-900">{oName}</p>
-                        <p className="text-xs text-slate-500">{other?.job_title}</p>
+                        <p className="font-medium text-sm text-foreground">{oName}</p>
+                        <p className="text-xs text-muted-foreground">{other?.job_title}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -203,15 +202,17 @@ export default function OneOnOnes() {
         </div>
         <div className="md:col-span-2">
           {selected ? (
-            <Card className="shadow-md h-full min-h-[500px] flex flex-col">
-              <CardHeader className="bg-slate-50/80 border-b pb-4">
+            <Card className="rounded-lg border bg-card shadow-subtle h-full min-h-[500px] flex flex-col">
+              <CardHeader className="bg-muted/50 border-b pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <Avatar className="h-12 w-12 border-2 border-white shadow-sm">
+                    <Avatar className="h-12 w-12 border-2 border-card">
                       <AvatarFallback>{otherName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <CardTitle className="text-xl">1:1 com {otherName}</CardTitle>
+                      <CardTitle className="text-xl font-semibold tracking-tight">
+                        1:1 com {otherName}
+                      </CardTitle>
                       <CardDescription className="flex items-center gap-2 mt-1">
                         <Calendar className="w-3 h-3" />{' '}
                         {selected.scheduled_at
@@ -254,16 +255,16 @@ export default function OneOnOnes() {
                   return (
                     <div key={f.key}>
                       <h4
-                        className={`text-sm font-semibold uppercase tracking-wider mb-1 flex items-center gap-2 ${f.color}`}
+                        className={`text-sm font-medium text-muted-foreground mb-1 flex items-center gap-2`}
                       >
-                        <f.icon className="h-4 w-4" /> {f.label}
+                        <f.icon className={`h-4 w-4 ${f.color}`} /> {f.label}
                       </h4>
-                      <p className="text-sm text-slate-700 whitespace-pre-wrap">{val}</p>
+                      <p className="text-sm text-foreground whitespace-pre-wrap">{val}</p>
                     </div>
                   )
                 })}
                 {selected.action_deadline && (
-                  <div className="flex items-center gap-2 text-sm text-slate-600 bg-slate-50 p-3 rounded border border-slate-100">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 p-3 rounded border">
                     <Clock className="h-4 w-4 text-primary" />
                     <span className="font-medium">Prazo para ser feito:</span>{' '}
                     {new Date(selected.action_deadline).toLocaleDateString('pt-BR')}
@@ -281,7 +282,7 @@ export default function OneOnOnes() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="h-full flex items-center justify-center min-h-[500px]">
+            <Card className="rounded-lg border bg-card shadow-subtle h-full flex items-center justify-center min-h-[500px]">
               <CardContent>
                 <p className="text-muted-foreground">Selecione uma reunião.</p>
               </CardContent>

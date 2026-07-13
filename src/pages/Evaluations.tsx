@@ -7,19 +7,20 @@ import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Plus, FileText, CalendarRange, ClipboardList, Sparkles } from 'lucide-react'
-import { TemplateDialog } from '@/components/evaluation/template-dialog'
-import { CycleDialog } from '@/components/evaluation/cycle-dialog'
-import { EvaluationFormDialog } from '@/components/evaluation/evaluation-form-dialog'
+import { TemplateDialog } from '@/components/evaluations/template-dialog'
+import { CycleDialog } from '@/components/evaluations/cycle-dialog'
+import { EvaluationFormDialog } from '@/components/evaluations/evaluation-form-dialog'
 import { fetchTemplates, fetchCycles, fetchResponses, fetchUsers } from '@/lib/api'
+import { CYCLE_STATUS } from '@/lib/status'
 import type { EvaluationTemplate, EvaluationCycle, EvaluationResponse, Usuario } from '@/lib/types'
 
 const statusColors: Record<string, string> = {
-  ativo: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  rascunho: 'bg-slate-50 text-slate-600 border-slate-200',
-  encerrado: 'bg-blue-50 text-blue-700 border-blue-200',
-  concluido: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  rascunho_r: 'bg-amber-50 text-amber-700 border-amber-200',
-  nao_iniciado: 'bg-slate-50 text-slate-500 border-slate-200',
+  ativo: 'bg-primary/8 text-primary',
+  rascunho: 'bg-muted text-muted-foreground',
+  encerrado: 'bg-accent text-foreground',
+  concluido: 'bg-primary/8 text-primary',
+  rascunho_r: 'bg-warning/8 text-warning',
+  nao_iniciado: 'bg-muted text-muted-foreground',
 }
 
 export default function Evaluations() {
@@ -70,12 +71,10 @@ export default function Evaluations() {
   const progress = responses.length > 0 ? (completed / responses.length) * 100 : 0
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Avaliações de Desempenho
-        </h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-xl font-semibold tracking-tight">Avaliações de Desempenho</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Gerencie templates, ciclos e execute avaliações.
         </p>
       </div>
@@ -108,15 +107,21 @@ export default function Evaluations() {
             </div>
             {cycles.map((c) => {
               const tpl = templates.find((t) => t.id === c.template_id)
+              const stCfg =
+                CYCLE_STATUS[
+                  c.status === 'ativo' ? 'active' : c.status === 'rascunho' ? 'draft' : 'finished'
+                ] ?? CYCLE_STATUS.draft
               return (
-                <Card key={c.id}>
+                <Card key={c.id} className="rounded-lg border bg-card shadow-subtle">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
-                        <CardTitle className="text-base">{c.nome}</CardTitle>
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
+                          {c.nome}
+                        </CardTitle>
                         <CardDescription>{tpl?.nome ?? 'Template não encontrado'}</CardDescription>
                       </div>
-                      <Badge variant="outline" className={statusColors[c.status]}>
+                      <Badge variant="outline" className={`${stCfg.bg} ${stCfg.text}`}>
                         {c.status}
                       </Badge>
                     </div>
@@ -153,9 +158,11 @@ export default function Evaluations() {
               </Button>
             </div>
             {templates.map((t) => (
-              <Card key={t.id}>
+              <Card key={t.id} className="rounded-lg border bg-card shadow-subtle">
                 <CardHeader>
-                  <CardTitle className="text-base">{t.nome}</CardTitle>
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
+                    {t.nome}
+                  </CardTitle>
                   <CardDescription>{t.descricao}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -182,15 +189,15 @@ export default function Evaluations() {
           <TabsContent value="avaliar" className="space-y-4">
             {activeCycle && activeTpl ? (
               <>
-                <Card className="bg-indigo-50 border-indigo-100">
+                <Card className="rounded-lg border bg-card shadow-subtle border-l-2 border-l-primary">
                   <CardHeader>
                     <div className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-indigo-600" />
+                      <Sparkles className="h-5 w-5 text-primary" />
                       <div>
-                        <CardTitle className="text-base text-indigo-900">
+                        <CardTitle className="text-sm font-medium text-muted-foreground">
                           Avaliação Ativa: {activeCycle.nome}
                         </CardTitle>
-                        <CardDescription className="text-indigo-700/80">
+                        <CardDescription>
                           Template: {activeTpl.nome} • Prazo:{' '}
                           {new Date(activeCycle.data_fim).toLocaleDateString('pt-BR')}
                         </CardDescription>
@@ -199,13 +206,15 @@ export default function Evaluations() {
                   </CardHeader>
                 </Card>
                 <div className="space-y-2">
-                  <p className="text-sm font-semibold text-slate-700">Pendentes para sua equipe</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Pendentes para sua equipe
+                  </p>
                   {employees
                     .filter((u) => u.papel_sistema === 'Colaborador')
                     .map((u) => (
                       <div
                         key={u.id}
-                        className="flex items-center justify-between p-3 rounded-lg border bg-white hover:shadow-sm transition-shadow"
+                        className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
@@ -225,14 +234,20 @@ export default function Evaluations() {
                 </div>
                 {responses.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-sm font-semibold text-slate-700">Progresso da Equipe</p>
-                    <div className="bg-white border rounded-lg overflow-hidden">
+                    <p className="text-sm font-medium text-muted-foreground">Progresso da Equipe</p>
+                    <div className="bg-card border rounded-lg overflow-hidden">
                       <table className="w-full text-sm">
-                        <thead className="bg-slate-50/50 border-b">
+                        <thead className="bg-muted/50 border-b">
                           <tr>
-                            <th className="text-left p-3 font-medium">Colaborador</th>
-                            <th className="text-left p-3 font-medium">Status</th>
-                            <th className="text-left p-3 font-medium">Enviado em</th>
+                            <th className="text-left p-3 font-medium text-muted-foreground">
+                              Colaborador
+                            </th>
+                            <th className="text-left p-3 font-medium text-muted-foreground">
+                              Status
+                            </th>
+                            <th className="text-left p-3 font-medium text-muted-foreground">
+                              Enviado em
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -275,7 +290,7 @@ export default function Evaluations() {
                 )}
               </>
             ) : (
-              <Card>
+              <Card className="rounded-lg border bg-card shadow-subtle">
                 <CardContent className="py-12 text-center">
                   <p className="text-muted-foreground">Nenhuma avaliação ativa no momento.</p>
                 </CardContent>
