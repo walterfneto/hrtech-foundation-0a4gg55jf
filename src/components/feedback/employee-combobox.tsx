@@ -45,8 +45,8 @@ export function EmployeeCombobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            'w-full justify-between bg-slate-50 font-normal border-slate-200',
-            'hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-primary/30',
+            'w-full justify-between bg-muted/50 font-normal border-border',
+            'hover:bg-muted focus-visible:ring-2 focus-visible:ring-primary/30',
             !value && 'text-muted-foreground',
           )}
         >
@@ -57,7 +57,7 @@ export function EmployeeCombobox({
                   {selectedName.charAt(0) ?? 'U'}
                 </AvatarFallback>
               </Avatar>
-              <span className="truncate text-slate-900">{selectedName}</span>
+              <span className="truncate text-foreground">{selectedName}</span>
               {selectedTitle && (
                 <span className="text-xs text-muted-foreground truncate hidden sm:inline">
                   · {selectedTitle}
@@ -107,7 +107,7 @@ export function EmployeeCombobox({
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-sm font-medium text-slate-900 truncate">{name}</span>
+                      <span className="text-sm font-medium text-foreground truncate">{name}</span>
                       {title && (
                         <span className="text-xs text-muted-foreground truncate">{title}</span>
                       )}

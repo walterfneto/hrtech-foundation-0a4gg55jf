@@ -5,8 +5,10 @@ import { useAuth } from '@/hooks/use-auth'
 import { useRealtime } from '@/hooks/use-realtime'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { FeedbackCard } from '@/components/feedback/feedback-card'
-import { FeedbackSendForm } from '@/components/feedback/feedback-send-form'
+import { FeedbackSendDialog } from '@/components/feedback/feedback-send-dialog'
+import { Plus } from 'lucide-react'
 import type { FeedbackRecord, EmployeeRecord } from '@/lib/types'
 
 export default function Feedback() {
@@ -15,6 +17,7 @@ export default function Feedback() {
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('recebidos')
+  const [dialogOpen, setDialogOpen] = useState(false)
 
   const load = useCallback(async () => {
     try {
@@ -58,24 +61,32 @@ export default function Feedback() {
 
   const handleSubmitted = () => {
     load()
-    setActiveTab('recebidos')
+    setDialogOpen(false)
+    setActiveTab('enviados')
   }
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-8">
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Feedback Contínuo</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Reconheça conquistas ou envie feedbacks de desenvolvimento.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Feedback Contínuo</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Reconheça conquistas ou envie feedbacks de desenvolvimento.
+          </p>
+        </div>
+        <Button
+          className="bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90"
+          onClick={() => setDialogOpen(true)}
+        >
+          <Plus className="mr-2 h-4 w-4" /> Dar Feedback
+        </Button>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="recebidos">Recebidos</TabsTrigger>
           <TabsTrigger value="enviados">Enviados</TabsTrigger>
           <TabsTrigger value="mural">Mural</TabsTrigger>
-          <TabsTrigger value="enviar">Enviar</TabsTrigger>
         </TabsList>
 
         <TabsContent value="recebidos" className="mt-6 space-y-4">
@@ -101,15 +112,15 @@ export default function Feedback() {
               ))
             : emptyMsg('Nenhum elogio público registrado.')}
         </TabsContent>
-
-        <TabsContent value="enviar" className="mt-6">
-          <FeedbackSendForm
-            employees={employees}
-            currentEmployeeId={empId}
-            onSubmitted={handleSubmitted}
-          />
-        </TabsContent>
       </Tabs>
+
+      <FeedbackSendDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        employees={employees}
+        currentEmployeeId={empId}
+        onSubmitted={handleSubmitted}
+      />
     </div>
   )
 }
