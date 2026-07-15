@@ -20,8 +20,9 @@ import {
 import { Loader2, UserPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import { createEmployeeWithUser } from '@/services/employees'
-import { fetchTeams, fetchEmployees } from '@/services/teams-employees-combined'
+import { fetchEmployees } from '@/services/teams-employees-combined'
 import { extractFieldErrors, type FieldErrors } from '@/lib/pocketbase/errors'
+import { TeamCombobox } from '@/components/team/team-combobox'
 
 interface Props {
   open: boolean
@@ -36,7 +37,6 @@ const STATUSES = [
 ] as const
 
 export function AddEmployeeDialog({ open, onOpenChange, onCreated }: Props) {
-  const [teams, setTeams] = useState<{ id: string; name: string }[]>([])
   const [managers, setManagers] = useState<{ id: string; name: string; job_title: string }[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -56,9 +56,8 @@ export function AddEmployeeDialog({ open, onOpenChange, onCreated }: Props) {
   useEffect(() => {
     if (!open) return
     setFieldErrors({})
-    Promise.all([fetchTeams(), fetchEmployees()])
-      .then(([teamData, empData]) => {
-        setTeams(teamData.map((t: any) => ({ id: t.id, name: t.name })))
+    fetchEmployees()
+      .then((empData) => {
         setManagers(
           empData.map((e: any) => ({
             id: e.id,
@@ -230,22 +229,11 @@ export function AddEmployeeDialog({ open, onOpenChange, onCreated }: Props) {
 
           <div className="grid gap-2">
             <Label htmlFor="emp-team">Time (opcional)</Label>
-            <Select
-              value={form.team || 'none'}
-              onValueChange={(v) => setForm({ ...form, team: v === 'none' ? '' : v })}
-            >
-              <SelectTrigger id="emp-team">
-                <SelectValue placeholder="Selecionar time" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Sem time</SelectItem>
-                {teams.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <TeamCombobox
+              value={form.team}
+              onChange={(v) => setForm({ ...form, team: v })}
+              placeholder="Selecionar ou criar time"
+            />
           </div>
 
           <div className="grid gap-2">
