@@ -30,7 +30,9 @@ import {
   Users,
   Eye,
   EyeOff,
+  FileSearch,
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { fetchEmployees } from '@/services/employees'
 import { useRealtime } from '@/hooks/use-realtime'
@@ -265,6 +267,12 @@ export default function Team() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link to={`/dossie/${emp.id}`}>
+                                <FileSearch className="mr-2 h-4 w-4" />
+                                Ver Dossiê
+                              </Link>
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
                                 setEvolutionTarget({

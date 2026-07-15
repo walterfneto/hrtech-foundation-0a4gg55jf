@@ -43,6 +43,7 @@ const App = () => (
                 <Route path="/feedback" element={<Feedback />} />
                 <Route path="/pdi" element={<PDI />} />
                 <Route path="/dossie" element={<Dossier />} />
+                <Route path="/dossie/:employeeId" element={<Dossier />} />
                 <Route path="/meu-desenvolvimento" element={<MyDevelopment />} />
                 <Route path="/configuracoes" element={<Settings />} />
                 <Route path="/tarefas" element={<Tasks />} />

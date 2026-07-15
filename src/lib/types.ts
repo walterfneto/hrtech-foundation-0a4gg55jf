@@ -245,3 +245,23 @@ export interface PulseSurveyRecord {
   created: string
   updated: string
 }
+
+export interface EmployeeDocumentRecord {
+  id: string
+  employee: string
+  company: string
+  title: string
+  file: string
+  category:
+    | 'Curriculum'
+    | 'Certificate'
+    | 'Medical Certificate'
+    | 'Contract'
+    | 'Termination'
+    | 'Other'
+  event_date: string
+  metadata: any
+  created: string
+  updated: string
+  expand?: { employee: EmployeeRecord }
+}

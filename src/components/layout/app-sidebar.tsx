@@ -10,6 +10,7 @@ import {
   TrendingUp,
   FolderOpen,
   ShieldCheck,
+  FileSearch,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import {
@@ -36,6 +37,7 @@ export function AppSidebar() {
     { title: '1:1s', url: '/1a1', icon: CalendarDays },
     { title: 'Feedback', url: '/feedback', icon: MessageSquare },
     { title: 'PDI', url: '/pdi', icon: TrendingUp },
+    { title: 'Dossiê', url: '/dossie', icon: FileSearch },
     { title: 'Tarefas', url: '/tarefas', icon: FolderOpen },
     { title: 'Clima', url: '/clima', icon: Target },
     ...(isManager

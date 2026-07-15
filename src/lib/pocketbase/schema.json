@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-15T00:28:23.023Z",
+  "generatedAt": "2026-07-15T01:07:32.291Z",
   "collections": [
     {
       "name": "users",
@@ -1098,6 +1098,89 @@
         }
       ],
       "indexes": []
+    },
+    {
+      "name": "employee_documents",
+      "type": "base",
+      "apiRules": {
+        "list": "company = @request.auth.company",
+        "view": "company = @request.auth.company",
+        "create": "company = @request.auth.company",
+        "update": "company = @request.auth.company",
+        "delete": "company = @request.auth.company"
+      },
+      "fields": [
+        {
+          "name": "employee",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "employees"
+        },
+        {
+          "name": "company",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "companies"
+        },
+        {
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "category",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "Curriculum",
+            "Certificate",
+            "Medical Certificate",
+            "Contract",
+            "Termination",
+            "Other"
+          ]
+        },
+        {
+          "name": "event_date",
+          "type": "date",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "metadata",
+          "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_employee_documents_employee ON employee_documents (employee)",
+        "CREATE INDEX idx_employee_documents_event_date ON employee_documents (event_date)"
+      ]
     }
   ]
 }

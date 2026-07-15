@@ -1,6 +1,7 @@
-import { Fingerprint, User, ShieldCheck, Database } from 'lucide-react'
+import { Fingerprint, User, ShieldCheck, Database, Calendar, Tag } from 'lucide-react'
+import type { DossierEvent } from '@/services/dossier'
 
-export function DossierMetadata({ event }: { event: any }) {
+export function DossierMetadata({ event }: { event: DossierEvent }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2 pb-2 border-b">
@@ -18,6 +19,28 @@ export function DossierMetadata({ event }: { event: any }) {
             <p className="text-sm font-medium mt-1 text-slate-900">{event.author}</p>
           </div>
         </div>
+
+        <div className="flex items-start gap-3">
+          <Calendar className="h-4 w-4 text-slate-400 mt-0.5" />
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              Data do Evento
+            </p>
+            <p className="text-sm font-medium mt-1 text-slate-900">{event.date}</p>
+          </div>
+        </div>
+
+        {event.category && (
+          <div className="flex items-start gap-3">
+            <Tag className="h-4 w-4 text-slate-400 mt-0.5" />
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                Categoria
+              </p>
+              <p className="text-sm font-medium mt-1 text-slate-900">{event.category}</p>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-start gap-3">
           <ShieldCheck className="h-4 w-4 text-emerald-500 mt-0.5" />
@@ -38,7 +61,7 @@ export function DossierMetadata({ event }: { event: any }) {
             <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               ID do Registro
             </p>
-            <p className="text-xs font-mono text-slate-500 mt-1">evt_{event.id}98f2a1b</p>
+            <p className="text-xs font-mono text-slate-500 mt-1">{event.id}</p>
           </div>
         </div>
       </div>
